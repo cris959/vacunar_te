@@ -1,5 +1,6 @@
 package com.cris959.Vacunar_te.model;
 
+import com.cris959.Vacunar_te.model.enums.AmbitoTrabajo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,8 @@ public class Ciudadano {
 
     private String patologia;
 
-    private String ambitoTrabajo;
+    @Enumerated(EnumType.STRING)
+    private AmbitoTrabajo ambitoTrabajo;
 
     @OneToMany(mappedBy = "ciudadano")
     private List<CitaVacunacion> citas;

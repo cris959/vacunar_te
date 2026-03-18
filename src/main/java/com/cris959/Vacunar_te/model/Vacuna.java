@@ -1,5 +1,8 @@
 package com.cris959.Vacunar_te.model;
 
+import com.cris959.Vacunar_te.model.enums.EstadoVacuna;
+import com.cris959.Vacunar_te.model.enums.MedidaDosis;
+import com.cris959.Vacunar_te.model.enums.TipoAntigeno;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,13 +25,16 @@ public class Vacuna {
 
     private String marca;
 
-    private double medida;
+    @Enumerated(EnumType.STRING)
+    private MedidaDosis medida;
 
-    private String antigeno;
+    @Enumerated(EnumType.STRING)
+    private TipoAntigeno antigeno;
 
     private LocalDate fechaCaduca;
 
-    private boolean colocada;
+    @Enumerated(EnumType.STRING)
+    private EstadoVacuna estado = EstadoVacuna.DISPONIBLE;
 
     @ManyToOne
     @JoinColumn(name = "laboratorio")

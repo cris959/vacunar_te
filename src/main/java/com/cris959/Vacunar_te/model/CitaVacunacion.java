@@ -1,5 +1,7 @@
 package com.cris959.Vacunar_te.model;
 
+import com.cris959.Vacunar_te.model.enums.DosisRefuerzo;
+import com.cris959.Vacunar_te.model.enums.EstadoCita;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +27,8 @@ public class CitaVacunacion {
 
     private String centroVacunacion;
 
-    private int codRefuerzo;
+    @Enumerated(EnumType.ORDINAL) // Aqui usamos el numero (1, 2, 3)
+    private DosisRefuerzo codRefuerzo;
 
     private LocalDateTime fechaHoraCita;
 
@@ -36,5 +39,6 @@ public class CitaVacunacion {
     @JoinColumn(name = "id_vacuna")
     private Vacuna vacuna;
 
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    private EstadoCita estado;
 }
