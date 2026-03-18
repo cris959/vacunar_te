@@ -20,7 +20,7 @@ public class Laboratorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idLaboratorio;
 
-    @Column(unique = true, length = 15)
+    @Column(unique = true, nullable = false, length = 11)
     private String cuit;
 
     private String nomComercial;

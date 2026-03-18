@@ -4,9 +4,11 @@ import com.cris959.Vacunar_te.model.CitaVacunacion;
 import com.cris959.Vacunar_te.model.Ciudadano;
 import com.cris959.Vacunar_te.model.enums.EstadoCita;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface CitaVacunacionRepository extends JpaRepository<CitaVacunacion, Integer> {
 
     // Busca la ultima cita NO cancelada de un ciudadano para ver que dosis le toca
