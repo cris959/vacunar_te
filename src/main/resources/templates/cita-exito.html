@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Turno Confirmado - Vacunar-te</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5 text-center">
+    <div class="display-1 text-success mb-4">
+        <i class="bi bi-check-circle"></i> ✓
+    </div>
+    <h1 class="mb-4">¡Turno Confirmado!</h1>
+    <div class="card shadow-sm mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <p class="lead" th:text="${mensaje}"></p>
+            <hr>
+            <p class="text-muted small">Por favor, asista al centro con su DNI físico y carnet de vacunación anterior (si posee).</p>
+            <a th:href="@{/citas/solicitar}" class="btn btn-primary">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

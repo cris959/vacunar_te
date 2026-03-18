@@ -16,7 +16,7 @@ import java.util.List;
 public class Ciudadano {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dni;
 
     private String nombreCompleto;

@@ -33,12 +33,19 @@ public class CiudadanoController {
     public String guardarCiudadano(@ModelAttribute("ciudadano") Ciudadano ciudadano, Model model) {
         try {
             ciudadanoService.registrarCiudadano(ciudadano);
-            return "redirect:/ciudadanos/exito"; // Redirige a una pagina de confirmacion
+            // Esto guarda un mensaje que solo dura un "salto" de pagina
+            flash.addFlashAttribute("success", "¡Ciudadano registrado con éxito!");
+            return "redirect:/ciudadanos/listado";  // Ahora apunta al listado
         } catch (Exception e) {
             // Si hay un error (DNI duplicado, etc.), volvemos al formulario con el mensaje
             model.addAttribute("error", e.getMessage());
             model.addAttribute("ambitos", AmbitoTrabajo.values());
             return "ciudadano-form";
         }
+    }
+    @GetMapping("/listado")
+    public String listarCiudadanos(Model model) {
+        model.addAttribute("ciudadanos", ciudadanoService.listarTodos());
+        return "ciudadano-listado"; // Nombre del HTML que crearemos abajo
     }
 }

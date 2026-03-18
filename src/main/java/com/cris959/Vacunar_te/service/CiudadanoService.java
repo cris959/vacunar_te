@@ -7,6 +7,8 @@ import com.cris959.Vacunar_te.repository.CiudadanoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CiudadanoService {
 
@@ -66,5 +68,10 @@ public class CiudadanoService {
         // Esta logica es mas compleja y suele ir en CitaVacunacionService,
         // pero aqui ya puedes retornar true si paso el filtro de cantidad.
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Ciudadano> listarTodos() {
+        return ciudadanoRepository.findAll();
     }
 }

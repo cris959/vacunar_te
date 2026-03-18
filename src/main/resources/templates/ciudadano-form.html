@@ -1,32 +1,102 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Registro de Ciudadano</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripción - Vacunar-te</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 15px; border: none; }
+        .card-header { border-radius: 15px 15px 0 0 !important; }
+        .form-label { font-weight: 600; color: #495057; }
+    </style>
 </head>
-<body class="container mt-5">
-<h2>Inscripción al Plan de Vacunación</h2>
+<body>
 
-<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-<form th:action="@{/ciudadanos/guardar}" th:object="${ciudadano}" method="post" class="card p-4 shadow">
-    <div class="mb-3">
-        <label class="form-label">DNI:</label>
-        <input type="number" th:field="*{dni}" class="form-control" required>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Error al registrar</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white p-4 text-center">
+                    <h2 class="mb-0">Inscripción al Plan de Vacunación</h2>
+                    <p class="mb-0 opacity-75">Complete sus datos personales para solicitar una dosis</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form th:action="@{/ciudadanos/guardar}" th:object="${ciudadano}" method="post">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="dni" class="form-label">DNI (Sin puntos)</label>
+                                <input type="number" th:field="*{dni}" id="dni" class="form-control form-control-lg"
+                                       placeholder="Ej: 32333789" required>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="nombreCompleto" class="form-label">Nombre Completo</label>
+                                <input type="text" th:field="*{nombreCompleto}" id="nombreCompleto" class="form-control form-control-lg"
+                                       placeholder="Apellido y Nombre" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <input type="email" th:field="*{email}" id="email" class="form-control form-control-lg"
+                                       placeholder="nombre@ejemplo.com">
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="celular" class="form-label">Celular de Contacto</label>
+                                <input type="tel" th:field="*{celular}" id="celular" class="form-control form-control-lg"
+                                       placeholder="Cod. área + número">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="ambitoTrabajo" class="form-label">Ámbito de Trabajo / Prioridad</label>
+                            <select th:field="*{ambitoTrabajo}" id="ambitoTrabajo" class="form-select form-select-lg">
+                                <option th:each="ambito : ${ambitos}"
+                                        th:value="${ambito}"
+                                        th:text="${#strings.capitalize(#strings.toLowerCase(ambito))}"></option>
+                            </select>
+                            <div class="form-text">Esto determinará la prioridad en la asignación de turnos.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="patologia" class="form-label">Patologías o Comorbilidades</label>
+                            <textarea th:field="*{patologia}" id="patologia" class="form-control" rows="3"
+                                      placeholder="Si posee enfermedades previas (Diabetes, Hipertensión, etc.), descríbalas aquí."></textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                Confirmar Registro e Inscripción
+                            </button>
+                            <a th:href="@{/}" class="btn btn-light">Volver al Inicio</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-center mt-4 text-muted small">
+                Sistema de Gestión de Vacunación &copy; 2026 - Vacunar-te
+            </p>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Nombre Completo:</label>
-        <input type="text" th:field="*{nombreCompleto}" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Ámbito de Trabajo:</label>
-        <select th:field="*{ambitoTrabajo}" class="form-select">
-            <option th:each="ambito : ${ambitos}"
-                    th:value="${ambito}"
-                    th:text="${#strings.capitalize(#strings.toLowerCase(ambito))}"></option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Registrar</button>
-</form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
