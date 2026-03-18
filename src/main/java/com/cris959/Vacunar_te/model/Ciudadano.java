@@ -21,6 +21,7 @@ public class Ciudadano {
 
     private String nombreCompleto;
 
+    @Column(unique = true)
     private String email;
 
     private String celular;
@@ -30,6 +31,6 @@ public class Ciudadano {
     @Enumerated(EnumType.STRING)
     private AmbitoTrabajo ambitoTrabajo;
 
-    @OneToMany(mappedBy = "ciudadano")
+    @OneToMany(mappedBy = "ciudadano", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CitaVacunacion> citas;
 }
