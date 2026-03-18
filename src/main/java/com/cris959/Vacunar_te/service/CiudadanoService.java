@@ -4,8 +4,8 @@ import com.cris959.Vacunar_te.exception.RegistroVacunacionException;
 import com.cris959.Vacunar_te.model.Ciudadano;
 import com.cris959.Vacunar_te.model.enums.EstadoCita;
 import com.cris959.Vacunar_te.repository.CiudadanoRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CiudadanoService {
@@ -42,7 +42,7 @@ public class CiudadanoService {
         return ciudadanoRepository.save(ciudadano);
     }
 
-
+    @Transactional(readOnly = true)
     public boolean puedeRecibirDosis(int dni) {
         // 1. Buscamos al ciudadano. Si no existe, NO puede recibir dosis aun
         // porque el instructivo dice que primero debe inscribirse al plan.

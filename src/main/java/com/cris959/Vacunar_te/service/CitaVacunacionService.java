@@ -27,6 +27,7 @@ public class CitaVacunacionService {
         this.ciudadanoRepository = ciudadanoRepository;
     }
 
+    @Transactional
     public CitaVacunacion programarCita(int dni, String centro, LocalDateTime fechaPropuesta) {
         // 1. Verificar si el ciudadano existe
         Ciudadano ciudadano = ciudadanoRepository.findById(dni)
