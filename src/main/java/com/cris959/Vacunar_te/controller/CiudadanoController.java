@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/ciudadanos")
@@ -30,7 +31,7 @@ public class CiudadanoController {
 
     // 2. Procesar el registro
     @PostMapping("/guardar")
-    public String guardarCiudadano(@ModelAttribute("ciudadano") Ciudadano ciudadano, Model model) {
+    public String guardarCiudadano(@ModelAttribute("ciudadano") Ciudadano ciudadano, Model model, RedirectAttributes flash) {
         try {
             ciudadanoService.registrarCiudadano(ciudadano);
             // Esto guarda un mensaje que solo dura un "salto" de pagina

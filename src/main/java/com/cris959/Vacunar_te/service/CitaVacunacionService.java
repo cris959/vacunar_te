@@ -4,6 +4,7 @@ import com.cris959.Vacunar_te.exception.CitaInvalidaException;
 import com.cris959.Vacunar_te.model.CitaVacunacion;
 import com.cris959.Vacunar_te.model.Ciudadano;
 import com.cris959.Vacunar_te.model.Vacuna;
+import com.cris959.Vacunar_te.model.enums.DosisRefuerzo;
 import com.cris959.Vacunar_te.model.enums.EstadoCita;
 import com.cris959.Vacunar_te.model.enums.EstadoVacuna;
 import com.cris959.Vacunar_te.repository.CitaVacunacionRepository;
@@ -29,6 +30,9 @@ public class CitaVacunacionService {
 
     @Transactional
     public CitaVacunacion programarCita(int dni, String centro, LocalDateTime fechaPropuesta) {
+        // Truncamos la fecha de entrada apenas llega
+        LocalDateTime fechaLimpia = fechaPropuesta.withNano(0);
+
         // 1. Verificar si el ciudadano existe
         Ciudadano ciudadano = ciudadanoRepository.findById(dni)
                 .orElseThrow(() -> new CitaInvalidaException("Ciudadano no encontrado. Debe registrarse primero."));
@@ -40,17 +44,12 @@ public class CitaVacunacionService {
 
         // 3. Validar Regla de Tiempo si ya tiene dosis anteriores
         if (!historial.isEmpty()) {
-            CitaVacunacion ultimaCita = historial.get(0);
+            CitaVacunacion ultimaCita = historial.getFirst();
             long diasTranscurridos = ChronoUnit.DAYS.between(ultimaCita.getFechaHoraCita(), fechaPropuesta);
 
             // Regla: Minimo 4 semanas (28 dias)
             if (diasTranscurridos < 28) {
-                throw new CitaInvalidaException("No han pasado las 4 semanas mínimas requeridas desde la última dosis.");
-            }
-
-            // Advertencia (opcional): Mas de 8 semanas (56 dias)
-            if (diasTranscurridos > 56) {
-                System.out.println("Alerta: La cita excede las 8 semanas recomendadas.");
+                throw new CitaInvalidaException("No han pasado las 4 semanas mínimas requeridas desde la última dosis (" + diasTranscurridos + " días transcurridos).");
             }
         }
 
@@ -58,11 +57,19 @@ public class CitaVacunacionService {
         CitaVacunacion nuevaCita = new CitaVacunacion();
         nuevaCita.setCiudadano(ciudadano);
         nuevaCita.setCentroVacunacion(centro);
-        nuevaCita.setFechaHoraCita(fechaPropuesta);
+        nuevaCita.setFechaHoraCita(fechaPropuesta.withNano(0));
         nuevaCita.setEstado(EstadoCita.PROGRAMADA);
 
-        // El codRefuerzo seria historial.size() + 1
-        // (Si tiene 0 citas, esta es la 1. Si tiene 1, esta es la 2...)
+        // 5. ASIGNAR EL ENUM DE REFUERZO (Solucion al error Column 'cod_refuerzo' cannot be null)
+        int dosisAnteriores = historial.size();
+
+        if (dosisAnteriores == 0) {
+            nuevaCita.setCodRefuerzo(DosisRefuerzo.PRIMERA);
+        } else if (dosisAnteriores == 1) {
+            nuevaCita.setCodRefuerzo(DosisRefuerzo.SEGUNDA);
+        } else {
+            nuevaCita.setCodRefuerzo(DosisRefuerzo.TERCERA);
+        }
 
         return citaVacunacionRepository.save(nuevaCita);
     }
