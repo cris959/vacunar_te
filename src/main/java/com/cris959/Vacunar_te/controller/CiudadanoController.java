@@ -20,11 +20,10 @@ import com.cris959.Vacunar_te.model.enums.AmbitoTrabajo;
 import com.cris959.Vacunar_te.service.CiudadanoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/ciudadanos")
@@ -59,9 +58,46 @@ public class CiudadanoController {
             return "ciudadano-form";
         }
     }
+
+    // 3. Mostrar listado
     @GetMapping("/listado")
-    public String listarCiudadanos(Model model) {
-        model.addAttribute("ciudadanos", ciudadanoService.listarTodos());
-        return "ciudadano-listado"; // Nombre del HTML que crearemos abajo
+    public String listarCiudadanos(@RequestParam(name = "buscarDni", required = false) String buscarDni, Model model) {
+        List<Ciudadano> lista;
+
+        if (buscarDni != null && !buscarDni.isEmpty()) {
+            lista = ciudadanoService.buscarPorDNI(buscarDni);
+        } else {
+            lista = ciudadanoService.obtenerTodosActivos();
+        }
+
+        model.addAttribute("ciudadanos", lista);
+        return "ciudadano-listado";
+    }
+
+    // 4. Eliminar Ciudadano
+    @GetMapping("/eliminar/{dni}")
+    public String eliminar(@PathVariable("dni") int dni, RedirectAttributes flash) {
+        ciudadanoService.eliminarCiudadano(dni);
+        flash.addFlashAttribute("success", "Ciudadano enviado a la papelera.");
+        return "redirect:/ciudadanos/listado";
+    }
+
+    // 5. Mostar Papelera "borrados"
+    @GetMapping("/papelera")
+    public String mostrarPapelera(Model model) {
+        List<Ciudadano> inactivos = ciudadanoService.obtenerInactivos();
+        model.addAttribute("inactivos", inactivos);
+        return "ciudadano-papelera";
+    }
+
+    // 6. Restaurar Ciudadano
+    @GetMapping("/restaurar/{dni}")
+    public String restaurar(@PathVariable int dni, RedirectAttributes flash) {
+        ciudadanoService.restaurarCiudadano(dni);
+        flash.addFlashAttribute("success", "Ciudadano restaurado con éxito.");
+        return "redirect:/ciudadanos/listado";
     }
 }
+
+
+

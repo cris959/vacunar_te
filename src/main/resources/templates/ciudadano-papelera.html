@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Papelera - Vacunar-te</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-trash3 text-danger"></i> Ciudadanos Inactivos</h2>
+    <a th:href="@{/ciudadanos/listado}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Volver al Listado
+    </a>
+  </div>
+
+  <div class="card shadow border-danger">
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-dark">
+        <tr>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Ámbito</th>
+          <th class="text-center">Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${inactivos}">
+          <td th:text="${c.dni}"></td>
+          <td th:text="${c.nombreCompleto}"></td>
+          <td th:text="${c.ambitoTrabajo}"></td>
+          <td class="text-center">
+            <a th:href="@{/ciudadanos/restaurar/{id}(id=${c.dni})}"
+               class="btn btn-sm btn-success">
+              <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+            </a>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(inactivos)}">
+          <td colspan="4" class="text-center py-4 text-muted">La papelera está vacía.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

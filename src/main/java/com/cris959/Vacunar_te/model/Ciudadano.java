@@ -48,4 +48,7 @@ public class Ciudadano {
 
     @OneToMany(mappedBy = "ciudadano", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CitaVacunacion> citas;
+
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true; // Por defecto todos nacen activos
 }

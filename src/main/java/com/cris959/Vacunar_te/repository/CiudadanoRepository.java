@@ -20,4 +20,16 @@ public interface CiudadanoRepository extends JpaRepository<Ciudadano, Integer> {
 
     // Tambien es util tener este por si necesitas recuperar al ciudadano por email luego
     Ciudadano findByEmail(String email);
+
+    // Buscamos por el numero exacto
+    List<Ciudadano> findByDni(int dni);
+
+    // Para el listado general
+    List<Ciudadano> findByActivoTrue();
+
+    // Para que el buscador tampoco encuentre a los "borrados"
+    List<Ciudadano> findByDniAndActivoTrue(int dni);
+
+    // Mostrar Los inactivos
+    List<Ciudadano> findByActivoFalse();
 }

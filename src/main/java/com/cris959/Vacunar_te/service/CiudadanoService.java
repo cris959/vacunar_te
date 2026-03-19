@@ -7,6 +7,7 @@ import com.cris959.Vacunar_te.repository.CiudadanoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +19,7 @@ public class CiudadanoService {
         this.ciudadanoRepository = ciudadanoRepository;
     }
 
+    // 1_ Metodo Registrar Ciudadano
     @Transactional
     public Ciudadano registrarCiudadano(Ciudadano ciudadano) {
 // 1. Validaciones de consistencia (Primero lo que NO requiere DB)
@@ -44,6 +46,7 @@ public class CiudadanoService {
         return ciudadanoRepository.save(ciudadano);
     }
 
+    // 2_ Metodo Puede Recibir Dosis
     @Transactional(readOnly = true)
     public boolean puedeRecibirDosis(int dni) {
         // 1. Buscamos al ciudadano. Si no existe, NO puede recibir dosis aun
@@ -70,8 +73,54 @@ public class CiudadanoService {
         return true;
     }
 
+    // 3_ Metodo Listar Todos
     @Transactional(readOnly = true)
     public List<Ciudadano> listarTodos() {
         return ciudadanoRepository.findAll();
+    }
+
+    // 4_ Metodo Buscar por DNI
+    @Transactional(readOnly = true)
+    public List<Ciudadano> buscarPorDNI(String dniTexto) {
+        try {
+            // Convertimos el String del formulario al int de la Entidad
+            int dniIntero = Integer.parseInt(dniTexto);
+            return ciudadanoRepository.findByDni(dniIntero);
+        } catch (NumberFormatException e) {
+            // Si el usuario escribe letras, devolvemos lista vacía para que no explote
+            return new ArrayList<>();
+        }
+    }
+
+    // 5_ Metodo Borrado Logico
+    @Transactional
+    public void eliminarCiudadano(int dni) {
+        Ciudadano ciudadano = ciudadanoRepository.findById(dni)
+                .orElseThrow(() -> new RuntimeException("No encontrado"));
+
+        ciudadano.setActivo(false); // Soft Delete: Solo cambiamos el estado
+        ciudadanoRepository.save(ciudadano);
+    }
+
+    // 6_ Metodo Listar Activos
+    @Transactional(readOnly = true)
+    public List<Ciudadano> obtenerTodosActivos() {
+        // Ahora solo listaremos los que tengan activo = true
+        return ciudadanoRepository.findByActivoTrue();
+    }
+
+    // 7_ Metodo Obtener Inactivos
+    @Transactional(readOnly = true)
+    public List<Ciudadano> obtenerInactivos() {
+        return ciudadanoRepository.findByActivoFalse();
+    }
+
+    // 8_ Metodo Restaurar Inactivo
+    @Transactional
+    public void restaurarCiudadano(int dni) {
+        Ciudadano ciudadano = ciudadanoRepository.findById(dni)
+                .orElseThrow(() -> new RuntimeException("No se encontró el ciudadano"));
+        ciudadano.setActivo(true);
+        ciudadanoRepository.save(ciudadano);
     }
 }
