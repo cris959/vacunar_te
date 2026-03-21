@@ -11,14 +11,14 @@ import java.util.List;
 @Repository
 public interface CitaVacunacionRepository extends JpaRepository<CitaVacunacion, Integer> {
 
-    // Busca la ultima cita NO cancelada de un ciudadano para ver que dosis le toca
+    // 1. Obtiene el historial de citas de un ciudadano excluyendo un estado (ej: CANCELADA) y ordenando por fecha descendente
     List<CitaVacunacion> findByCiudadanoAndEstadoNotOrderByFechaHoraCitaDesc(
             Ciudadano ciudadano, EstadoCita estado
     );
 
-    // Para las estadisticas de la Etapa 2: Citas por centro de vacunacion
+    // 2. Recupera la totalidad de citas registradas para un centro de vacunacion especifico
     List<CitaVacunacion> findByCentroVacunacion(String centro);
 
-    // Buscar citas por centro y por un estado especifico
+    // 3. Filtra las citas de un centro de vacunacion segun su estado actual (ej: PENDIENTE, COMPLETADA)
     List<CitaVacunacion> findByCentroVacunacionAndEstado(String centro, EstadoCita estado);
 }

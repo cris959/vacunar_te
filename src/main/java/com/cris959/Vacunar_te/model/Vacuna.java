@@ -19,10 +19,13 @@ import com.cris959.Vacunar_te.model.enums.EstadoVacuna;
 import com.cris959.Vacunar_te.model.enums.MedidaDosis;
 import com.cris959.Vacunar_te.model.enums.TipoAntigeno;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 import java.time.LocalDate;
 
@@ -34,22 +37,30 @@ public class Vacuna {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_vacuna")
     private int idVacuna;
 
-    private int nroSerieDosis;
-
-    private String marca;
+    @Column(name = "nro_serie_dosis", length = 20, nullable = false)
+    @Size(min = 10, max = 20, message = "El número de serie debe tener entre 10 y 20 dígitos")
+    @Pattern(regexp = "^[0-9]{10,20}$", message = "El número de serie debe contener entre 10 y 20 dígitos numéricos")
+    private String nroSerieDosis;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "medida")
     private MedidaDosis medida;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "antigeno")
     private TipoAntigeno antigeno;
 
+    @Column(name = "fecha_caduca")
     private LocalDate fechaCaduca;
 
     @Enumerated(EnumType.STRING)
     private EstadoVacuna estado = EstadoVacuna.DISPONIBLE;
+
+    @Column(name = "cantidad_dosis", nullable = false)
+    private int cantidadDosis;
 
     @ManyToOne
     @JoinColumn(name = "laboratorio")

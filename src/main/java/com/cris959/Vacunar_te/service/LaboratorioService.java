@@ -6,6 +6,8 @@ import com.cris959.Vacunar_te.repository.LaboratorioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class LaboratorioService {
 
@@ -28,5 +30,21 @@ public class LaboratorioService {
         }
 
         return laboratorioRepository.save(lab);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Laboratorio> listarTodos() {
+        return laboratorioRepository.findAll();
+    }
+
+    @Transactional
+    public void guardar(Laboratorio lab) {
+        laboratorioRepository.save(lab);
+    }
+
+    @Transactional(readOnly = true)
+    public Laboratorio buscarPorId(int id) {
+        return laboratorioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Laboratorio no encontrado"));
     }
 }

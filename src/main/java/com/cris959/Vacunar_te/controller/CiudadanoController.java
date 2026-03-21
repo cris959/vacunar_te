@@ -35,31 +35,29 @@ public class CiudadanoController {
         this.ciudadanoService = ciudadanoService;
     }
 
-    // 1. Mostrar el formulario de registro
+    // 1. Prepara el modelo con un nuevo objeto Ciudadano y los ambitos laborales para el formulario
     @GetMapping("/nuevo")
     public String formularioRegistro(Model model) {
         model.addAttribute("ciudadano", new Ciudadano());
-        model.addAttribute("ambitos", AmbitoTrabajo.values()); // Enviamos los Enums para el select
-        return "ciudadano-form"; // Nombre del archivo .html en templates
+        model.addAttribute("ambitos", AmbitoTrabajo.values());
+        return "ciudadano-form";
     }
 
-    // 2. Procesar el registro
+    // 2. Gestiona el alta de ciudadanos manejando excepciones de validacion y mensajes temporales (Flash)
     @PostMapping("/guardar")
     public String guardarCiudadano(@ModelAttribute("ciudadano") Ciudadano ciudadano, Model model, RedirectAttributes flash) {
         try {
             ciudadanoService.registrarCiudadano(ciudadano);
-            // Esto guarda un mensaje que solo dura un "salto" de pagina
-            flash.addFlashAttribute("success", "¡Ciudadano registrado con éxito!");
-            return "redirect:/ciudadanos/listado";  // Ahora apunta al listado
+            flash.addFlashAttribute("success", "Ciudadano registrado con exito.");
+            return "redirect:/ciudadanos/listado";
         } catch (Exception e) {
-            // Si hay un error (DNI duplicado, etc.), volvemos al formulario con el mensaje
             model.addAttribute("error", e.getMessage());
             model.addAttribute("ambitos", AmbitoTrabajo.values());
             return "ciudadano-form";
         }
     }
 
-    // 3. Mostrar listado
+    // 3. Visualiza el listado de ciudadanos activos permitiendo el filtrado opcional por numero de DNI
     @GetMapping("/listado")
     public String listarCiudadanos(@RequestParam(name = "buscarDni", required = false) String buscarDni, Model model) {
         List<Ciudadano> lista;
@@ -74,7 +72,7 @@ public class CiudadanoController {
         return "ciudadano-listado";
     }
 
-    // 4. Eliminar Ciudadano
+    // 4. Ejecuta el borrado logico del ciudadano y redirige al listado principal con confirmacion
     @GetMapping("/eliminar/{dni}")
     public String eliminar(@PathVariable("dni") int dni, RedirectAttributes flash) {
         ciudadanoService.eliminarCiudadano(dni);
@@ -82,7 +80,7 @@ public class CiudadanoController {
         return "redirect:/ciudadanos/listado";
     }
 
-    // 5. Mostar Papelera "borrados"
+    // 5. Carga la vista de la papelera con aquellos ciudadanos que fueron dados de baja logicamente
     @GetMapping("/papelera")
     public String mostrarPapelera(Model model) {
         List<Ciudadano> inactivos = ciudadanoService.obtenerInactivos();
@@ -90,11 +88,11 @@ public class CiudadanoController {
         return "ciudadano-papelera";
     }
 
-    // 6. Restaurar Ciudadano
+    // 6. Revierte la baja logica de un ciudadano permitiendo que vuelva a figurar en los listados operativos
     @GetMapping("/restaurar/{dni}")
     public String restaurar(@PathVariable int dni, RedirectAttributes flash) {
         ciudadanoService.restaurarCiudadano(dni);
-        flash.addFlashAttribute("success", "Ciudadano restaurado con éxito.");
+        flash.addFlashAttribute("success", "Ciudadano restaurado con exito.");
         return "redirect:/ciudadanos/listado";
     }
 }

@@ -6,30 +6,28 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CiudadanoRepository extends JpaRepository<Ciudadano, Integer> {
 
-    // Procedimiento personalizado para las estadisticas que pide el instructivo
+    // 1. Recupera ciudadanos segun su categoria laboral para reportes estadisticos
     List<Ciudadano> findByAmbitoTrabajo(AmbitoTrabajo ambito);
 
-    // Buscar por nombre si necesitas filtrar en la GUI
+    // 2. Filtro de busqueda por coincidencia parcial en el nombre (ignora mayusculas)
     List<Ciudadano> findByNombreCompletoContainingIgnoreCase(String nombre);
 
+    // 3. Validacion de existencia y recuperacion mediante correo electronico
     boolean existsByEmail(String email);
+    Optional<Ciudadano> findByEmail(String email);
 
-    // Tambien es util tener este por si necesitas recuperar al ciudadano por email luego
-    Ciudadano findByEmail(String email);
+    // 4. Busqueda por documento de identidad exacto
+    Optional<Ciudadano> findByDni(int dni);
 
-    // Buscamos por el numero exacto
-    List<Ciudadano> findByDni(int dni);
-
-    // Para el listado general
+    // 5. Listados filtrados por estado de activacion (Borrado Logico)
     List<Ciudadano> findByActivoTrue();
-
-    // Para que el buscador tampoco encuentre a los "borrados"
-    List<Ciudadano> findByDniAndActivoTrue(int dni);
-
-    // Mostrar Los inactivos
     List<Ciudadano> findByActivoFalse();
+
+    // 6. Busqueda combinada para asegurar que el ciudadano este habilitado en el sistema
+    Optional<Ciudadano> findByDniAndActivoTrue(int dni);
 }

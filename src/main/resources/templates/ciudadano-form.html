@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscripción - Vacunar-te</title>
+    <title>Inscripcion - Vacunar-te</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .card { border-radius: 15px; border: none; }
-        .card-header { border-radius: 15px 15px 0 0 !important; }
-        .form-label { font-weight: 600; color: #495057; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .card-form { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            padding: 2rem;
+        }
+        .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; }
+        .form-control-lg, .form-select-lg {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            font-size: 1rem;
+        }
+        .form-control-lg:focus, .form-select-lg:focus {
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+        .btn-primary { border-radius: 10px; padding: 12px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -18,16 +34,16 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
 
-            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <span th:text="${error}">Error al registrar</span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white p-4 text-center">
-                    <h2 class="mb-0">Inscripción al Plan de Vacunación</h2>
-                    <p class="mb-0 opacity-75">Complete sus datos personales para solicitar una dosis</p>
+            <div class="card card-form">
+                <div class="card-header text-white text-center">
+                    <h2 class="fw-bold mb-1">Inscripcion al Plan</h2>
+                    <p class="mb-0 opacity-75">Complete sus datos para solicitar una dosis en Cordoba</p>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
@@ -35,55 +51,59 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="dni" class="form-label">DNI (Sin puntos)</label>
+                                <label for="dni" class="form-label"><i class="bi bi-card-text me-2"></i>DNI (Sin puntos)</label>
                                 <input type="number" th:field="*{dni}" id="dni" class="form-control form-control-lg"
-                                       placeholder="Ej: 32333789" required>
+                                       placeholder="Ej: 32333789" required autofocus>
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label for="nombreCompleto" class="form-label">Nombre Completo</label>
-                                <input type="text" th:field="*{nombreCompleto}" id="nombreCompleto" class="form-control form-control-lg"
+                                <label for="nombreCompleto" class="form-label"><i class="bi bi-person me-2"></i>Nombre Completo</label>
+                                <input type="text" th:field="*{nombreCompleto}" id="nombreCompleto"
+                                       class="form-control form-control-lg"
                                        placeholder="Apellido y Nombre" required>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <label for="email" class="form-label"><i class="bi bi-envelope me-2"></i>Correo Electronico</label>
                                 <input type="email" th:field="*{email}" id="email" class="form-control form-control-lg"
                                        placeholder="nombre@ejemplo.com">
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label for="celular" class="form-label">Celular de Contacto</label>
-                                <input type="tel" th:field="*{celular}" id="celular" class="form-control form-control-lg"
-                                       placeholder="Cod. área + número">
+                                <label for="celular" class="form-label"><i class="bi bi-phone me-2"></i>Celular de Contacto</label>
+                                <input type="tel" th:field="*{celular}" id="celular"
+                                       class="form-control form-control-lg"
+                                       placeholder="Cod. area + numero">
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="ambitoTrabajo" class="form-label">Ámbito de Trabajo / Prioridad</label>
+                            <label for="ambitoTrabajo" class="form-label"><i class="bi bi-briefcase me-2"></i>Ambito de Trabajo / Prioridad</label>
                             <select th:field="*{ambitoTrabajo}" id="ambitoTrabajo" class="form-select form-select-lg">
                                 <option th:each="ambito : ${ambitos}"
                                         th:value="${ambito}"
                                         th:text="${#strings.capitalize(#strings.toLowerCase(ambito))}"></option>
                             </select>
-                            <div class="form-text">Esto determinará la prioridad en la asignación de turnos.</div>
+                            <div class="form-text small">Esto determinara la prioridad en la asignacion de turnos.</div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="patologia" class="form-label">Patologías o Comorbilidades</label>
+                            <label for="patologia" class="form-label"><i class="bi bi-heart-pulse me-2"></i>Patologias o Comorbilidades</label>
                             <textarea th:field="*{patologia}" id="patologia" class="form-control" rows="3"
-                                      placeholder="Si posee enfermedades previas (Diabetes, Hipertensión, etc.), descríbalas aquí."></textarea>
+                                      placeholder="Si posee enfermedades previas (Diabetes, Hipertension, etc.), describalas aqui."></textarea>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-4 opacity-25">
 
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-primary btn-lg shadow-sm">
-                                Confirmar Registro e Inscripción
+                                <i class="bi bi-check-circle me-2"></i>Confirmar Registro e Inscripcion
                             </button>
-                            <a th:href="@{/}" class="btn btn-light">Volver al Inicio</a>
+                            <a th:href="@{/ciudadanos/listado}" class="btn btn-link text-muted text-decoration-none small">
+                                <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+                            </a>
                         </div>
 
                     </form>
@@ -91,7 +111,7 @@
             </div>
 
             <p class="text-center mt-4 text-muted small">
-                Sistema de Gestión de Vacunación &copy; 2026 - Vacunar-te
+                Provincia de Cordoba - Ministerio de Salud &copy; 2026
             </p>
         </div>
     </div>

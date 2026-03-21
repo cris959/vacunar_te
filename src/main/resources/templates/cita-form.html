@@ -2,56 +2,69 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmar Turno - Vacunar-te</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .confirm-card { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .card-header { border-radius: 15px 15px 0 0 !important; background: #198754; }
+        .form-select-lg { border-radius: 10px; border: 2px solid #e9ecef; }
+        .form-select-lg:focus { border-color: #198754; box-shadow: none; }
+        .dni-box { background-color: #e7f3ef; border-left: 5px solid #198754; border-radius: 8px; }
+    </style>
 </head>
-<body class="bg-light">
+<body>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
 
-            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm border-0" role="alert">
                 <i class="bi bi-exclamation-octagon-fill me-2"></i>
                 <span th:text="${error}">Error al procesar el turno</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="card shadow border-success">
-                <div class="card-header bg-success text-white py-3">
-                    <h4 class="mb-0 text-center"><i class="bi bi-check-circle-fill"></i> Ciudadano Habilitado</h4>
+            <div class="card confirm-card">
+                <div class="card-header text-white py-3">
+                    <h5 class="mb-0 text-center fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Ciudadano Habilitado</h5>
                 </div>
-                <div class="card-body p-4">
+
+                <div class="card-body p-4 p-md-5">
                     <form th:action="@{/citas/guardar}" method="post">
                         <input type="hidden" name="dni" th:value="${dni}">
 
-                        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center">
-                            <i class="bi bi-person-badge fs-4 me-3"></i>
+                        <div class="dni-box p-3 mb-4 d-flex align-items-center">
+                            <div class="bg-white rounded-circle p-2 me-3 shadow-sm">
+                                <i class="bi bi-person-vcard text-success fs-4"></i>
+                            </div>
                             <div>
-                                <small class="d-block text-uppercase fw-bold opacity-75">DNI Detectado</small>
-                                <strong class="fs-5" th:text="${dni}"></strong>
+                                <small class="d-block text-uppercase fw-bold text-success" style="font-size: 0.7rem;">Documento Validado</small>
+                                <strong class="fs-5 text-dark" th:text="${dni}"></strong>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Centro de Vacunación:</label>
-                            <select name="centro" class="form-select form-select-lg border-success" required>
-                                <option value="" disabled selected>Seleccione el centro más cercano...</option>
-                                <option th:each="c : ${centros}"
-                                        th:value="${c}"
-                                        th:text="${c}"></option>
+                            <label class="form-label fw-bold text-secondary">Centro de Vacunacion</label>
+                            <select name="centro" class="form-select form-select-lg" required>
+                                <option value="" disabled selected>Elija el centro mas cercano...</option>
+                                <option th:each="c : ${centros}" th:value="${c}" th:text="${c}"></option>
                             </select>
-                            <div class="form-text mt-2 text-muted">
-                                * Se le asignará un turno automáticamente para las próximas 24-48 horas.
+                            <div class="form-text mt-2 small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Se asignara el turno para las proximas 24-48 horas.
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                        <div class="d-grid gap-2 pt-2">
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm fw-bold">
                                 <i class="bi bi-calendar-check me-2"></i>Confirmar Mi Turno
                             </button>
-                            <a th:href="@{/ciudadanos/listado}" class="btn btn-outline-secondary">
-                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            <a th:href="@{/citas/solicitar}" class="btn btn-link text-decoration-none text-muted small mt-2">
+                                <i class="bi bi-arrow-left me-1"></i> Cancelar y volver
                             </a>
                         </div>
                     </form>
@@ -59,7 +72,7 @@
             </div>
 
             <p class="text-center mt-4 text-muted small">
-                Provincia de Córdoba - Ministerio de Salud
+                Villa Dolores, Cordoba - Ministerio de Salud
             </p>
         </div>
     </div>

@@ -19,107 +19,87 @@ public class CiudadanoService {
         this.ciudadanoRepository = ciudadanoRepository;
     }
 
-    // 1_ Metodo Registrar Ciudadano
+    // 1. Valida la integridad de los datos (DNI y Nombre) y la unicidad (Email) antes de persistir
     @Transactional
     public Ciudadano registrarCiudadano(Ciudadano ciudadano) {
-// 1. Validaciones de consistencia (Primero lo que NO requiere DB)
-        if (ciudadano.getDni() <= 1000000) { // Un DNI real tiene mas de 1M
-            throw new RegistroVacunacionException("El número de DNI ingresado no es válido.");
+        if (ciudadano.getDni() <= 1000000) {
+            throw new RegistroVacunacionException("El numero de DNI ingresado no es valido.");
         }
 
         if (ciudadano.getNombreCompleto() == null || ciudadano.getNombreCompleto().strip().isEmpty()) {
             throw new RegistroVacunacionException("El nombre completo es obligatorio para el registro.");
         }
 
-        // 2. Validaciones de Existencia (Consultas a la DB)
         if (ciudadanoRepository.existsById(ciudadano.getDni())) {
-            throw new RegistroVacunacionException("El ciudadano con DNI " + ciudadano.getDni() + " ya se encuentra registrado.");
+            throw new RegistroVacunacionException("El ciudadano con DNI " + ciudadano.getDni() + " ya esta registrado.");
         }
 
         if (ciudadano.getEmail() != null && !ciudadano.getEmail().isBlank()) {
             if (ciudadanoRepository.existsByEmail(ciudadano.getEmail())) {
-                throw new RegistroVacunacionException("El email '" + ciudadano.getEmail() + "' ya pertenece a otro ciudadano.");
+                throw new RegistroVacunacionException("El email ya pertenece a otro ciudadano.");
             }
         }
 
-        // 3. Persistencia
         return ciudadanoRepository.save(ciudadano);
     }
 
-    // 2_ Metodo Puede Recibir Dosis
+    // 2. Verifica si el ciudadano tiene menos de 3 citas activas para permitir un nuevo turno
     @Transactional(readOnly = true)
     public boolean puedeRecibirDosis(int dni) {
-        // 1. Buscamos al ciudadano. Si no existe, NO puede recibir dosis aun
-        // porque el instructivo dice que primero debe inscribirse al plan.
-        Ciudadano c = ciudadanoRepository.findById(dni).orElse(null);
+        Ciudadano c = ciudadanoRepository.findById(dni)
+                .orElseThrow(() -> new RegistroVacunacionException("El ciudadano con DNI " + dni + " no esta registrado."));
 
-        if (c == null) {
-            throw new RegistroVacunacionException("El ciudadano con DNI " + dni + " no está registrado en el sistema.");
-        }
-
-        // 2. Validamos la cantidad de citas.
-        // OJO: No todas las citas cuentan. Solo cuentan las que no han sido CANCELADAS.
         long citasActivas = c.getCitas().stream()
                 .filter(cita -> cita.getEstado() != EstadoCita.CANCELADA)
                 .count();
 
-        if (citasActivas >= 3) {
-            return false; // Ya completo el esquema de 3 dosis (o tiene 3 turnos vigentes)
-        }
-
-        // 3. Validacion de intervalo (Si ya tiene al menos una dosis)
-        // Esta logica es mas compleja y suele ir en CitaVacunacionService,
-        // pero aqui ya puedes retornar true si paso el filtro de cantidad.
-        return true;
+        return citasActivas < 3;
     }
 
-    // 3_ Metodo Listar Todos
+    // 3. Recupera el listado completo de ciudadanos sin aplicar filtros de estado
     @Transactional(readOnly = true)
     public List<Ciudadano> listarTodos() {
         return ciudadanoRepository.findAll();
     }
 
-    // 4_ Metodo Buscar por DNI
+    // 4. Realiza una busqueda por documento convirtiendo el texto de entrada y manejando errores de formato
     @Transactional(readOnly = true)
     public List<Ciudadano> buscarPorDNI(String dniTexto) {
         try {
-            // Convertimos el String del formulario al int de la Entidad
-            int dniIntero = Integer.parseInt(dniTexto);
-            return ciudadanoRepository.findByDni(dniIntero);
+            int dniEntero = Integer.parseInt(dniTexto);
+            return ciudadanoRepository.findByDni(dniEntero).map(List::of).orElse(new ArrayList<>());
         } catch (NumberFormatException e) {
-            // Si el usuario escribe letras, devolvemos lista vacía para que no explote
             return new ArrayList<>();
         }
     }
 
-    // 5_ Metodo Borrado Logico
+    // 5. Aplica el borrado logico cambiando el estado de activacion del ciudadano
     @Transactional
     public void eliminarCiudadano(int dni) {
         Ciudadano ciudadano = ciudadanoRepository.findById(dni)
-                .orElseThrow(() -> new RuntimeException("No encontrado"));
+                .orElseThrow(() -> new RegistroVacunacionException("Ciudadano no encontrado."));
 
-        ciudadano.setActivo(false); // Soft Delete: Solo cambiamos el estado
+        ciudadano.setActivo(false);
         ciudadanoRepository.save(ciudadano);
     }
 
-    // 6_ Metodo Listar Activos
+    // 6. Obtiene unicamente a los ciudadanos que se encuentran habilitados (activo = true)
     @Transactional(readOnly = true)
     public List<Ciudadano> obtenerTodosActivos() {
-        // Ahora solo listaremos los que tengan activo = true
         return ciudadanoRepository.findByActivoTrue();
     }
 
-    // 7_ Metodo Obtener Inactivos
+    // 7. Lista a los ciudadanos que han sido dados de baja logicamente
     @Transactional(readOnly = true)
     public List<Ciudadano> obtenerInactivos() {
         return ciudadanoRepository.findByActivoFalse();
     }
 
-    // 8_ Metodo Restaurar Inactivo
+    // 8. Revierte el proceso de borrado logico restaurando el acceso del ciudadano al sistema
     @Transactional
     public void restaurarCiudadano(int dni) {
         Ciudadano ciudadano = ciudadanoRepository.findById(dni)
-                .orElseThrow(() -> new RuntimeException("No se encontró el ciudadano"));
+                .orElseThrow(() -> new RegistroVacunacionException("No se encontro el ciudadano."));
         ciudadano.setActivo(true);
         ciudadanoRepository.save(ciudadano);
     }
