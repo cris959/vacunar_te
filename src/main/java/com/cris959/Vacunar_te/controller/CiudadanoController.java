@@ -65,7 +65,7 @@ public class CiudadanoController {
         if (buscarDni != null && !buscarDni.isEmpty()) {
             lista = ciudadanoService.buscarPorDNI(buscarDni);
         } else {
-            lista = ciudadanoService.obtenerTodosActivos();
+            lista = ciudadanoService.listarCiudadanosActivos();
         }
 
         model.addAttribute("ciudadanos", lista);
@@ -94,6 +94,29 @@ public class CiudadanoController {
         ciudadanoService.restaurarCiudadano(dni);
         flash.addFlashAttribute("success", "Ciudadano restaurado con exito.");
         return "redirect:/ciudadanos/listado";
+    }
+
+    // 7. Carga los datos en el formulario para editar
+    @GetMapping("/editar/{dni}")
+    public String mostrarFormularioEditar(@PathVariable("dni") int dni, Model model) {
+        Ciudadano ciudadano = ciudadanoService.buscarPorId(dni);
+        model.addAttribute("ciudadano", ciudadano);
+        model.addAttribute("ambitos", AmbitoTrabajo.values());
+        model.addAttribute("editando", true); // Para cambiar el titulo en el HTML
+        return "ciudadano-form";
+    }
+
+    // 8. Procesa la edicion (puedes crear un POST especifico o ajustar el anterior)
+    @PostMapping("/actualizar")
+    public String actualizar(@ModelAttribute("ciudadano") Ciudadano ciudadano, RedirectAttributes flash) {
+        try {
+            ciudadanoService.actualizarCiudadano(ciudadano);
+            flash.addFlashAttribute("success", "Datos actualizados correctamente.");
+            return "redirect:/ciudadanos/listado";
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", e.getMessage());
+            return "redirect:/ciudadanos/editar/" + ciudadano.getDni();
+        }
     }
 }
 

@@ -94,4 +94,20 @@ public class CitaVacunacionController {
                 "Autovac Kempes"
         ));
     }
+
+    // Este es el procedimiento que falta y causa el error del botón verde
+    @GetMapping("/nuevo")
+    public String formularioNuevaCita(Model model) {
+        // 1. Creamos un objeto vacio para el th:object del formulario
+        model.addAttribute("cita", new CitaVacunacion());
+
+        // 2. Cargamos los ciudadanos activos de Cordoba para el selector (el procedimiento que definimos antes)
+        model.addAttribute("ciudadanos", ciudadanoService.listarCiudadanosActivos());
+
+        // 3. Reutilizamos tu procedimiento auxiliar para cargar los centros disponibles
+        cargarCentrosEnModel(model);
+
+        // 4. Retornamos la vista del formulario
+        return "cita-form";
+    }
 }

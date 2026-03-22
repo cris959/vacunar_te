@@ -1,147 +1,107 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de Lotes - Vacunar-te</title>
+    <title>Ingreso de Lotes y Vacunas - Vacunar-te</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .card-header { border-radius: 15px 15px 0 0 !important; padding: 1.2rem; background: linear-gradient(45deg, #0d6efd, #004fb1); }
-        .form-label { font-weight: 600; color: #344767; margin-bottom: 0.5rem; }
-        .input-group-text { background-color: #fff; border-right: none; color: #adb5bd; }
-        .form-control, .form-select { border-left: none; padding: 0.6rem 0.75rem; }
-        .form-control:focus, .form-select:focus { box-shadow: none; border-color: #dee2e6; }
-        .input-group:focus-within { box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); border-radius: 0.375rem; }
-        .invalid-feedback { font-weight: 500; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .main-container { max-width: 750px; margin-top: 50px; }
+        .form-card { border: none; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+        /* Cabecera Azul según Captura 409 */
+        .card-header { background-color: #0d6efd; color: white; padding: 20px 30px; border: none; }
+        .card-header h3 { font-size: 1.7rem; font-weight: 500; display: flex; align-items: center; margin: 0; }
+
+        .form-label { font-weight: 600; color: #495057; margin-bottom: 8px; }
+        .form-control, .form-select { padding: 12px; border-radius: 6px; border: 1px solid #dee2e6; }
+
+
+        .btn-register {
+            background-color: #0d6efd;
+            border: none;
+            color: white;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn-register:hover { background-color: #0b5ed7; }
+        .text-primary-label { color: #0d6efd; font-weight: 600; }
+        .back-link { text-decoration: none; color: #6c757d; display: block; text-align: center; margin-top: 25px; }
     </style>
 </head>
 <body>
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-9">
+<div class="container main-container">
+    <div class="card form-card">
+        <div class="card-header">
+            <h3>
+                <i class="bi bi-box-seam me-3"></i>
+                <span th:text="${vacuna.idVacuna != 0 ? 'Editar Lote de Vacuna' : 'Ingreso de Lotes y Vacunas'}">Ingreso de Lotes y Vacunas</span>
+            </h3>
+        </div>
 
-            <div class="d-flex align-items-center mb-4">
-                <div class="bg-primary text-white p-3 rounded-3 me-3">
-                    <i class="bi bi-capsule fs-3"></i>
+        <div class="card-body p-5">
+            <form th:action="@{/vacunas/guardar}" th:object="${vacuna}" method="post">
+
+                <input type="hidden" th:field="*{idVacuna}" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="antigeno" class="form-label">Nombre de la Vacuna</label>
+                        <select th:field="*{antigeno}" id="antigeno" class="form-select" required>
+                            <option value="" disabled selected>Ej: Sputnik V, Sinopharm</option>
+                            <option th:each="a : ${antigenos}" th:value="${a}" th:text="${#strings.replace(a, '_', ' ')}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label for="laboratorio" class="form-label">Laboratorio Productor</label>
+                        <select th:field="*{laboratorio}" id="laboratorio" class="form-select" required>
+                            <option value="" disabled selected>Nombre del laboratorio</option>
+                            <option th:each="lab : ${laboratorios}" th:value="${lab.idLaboratorio}" th:text="${lab.nomComercial}"></option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="mb-0 fw-bold text-dark">Inventario de Vacunas</h2>
-                    <p class="text-muted mb-0">Villa Dolores, Cordoba - Gestion de Stock</p>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="nroSerieDosis" class="form-label">Numero de Lote</label>
+                        <input type="text" th:field="*{nroSerieDosis}" id="nroSerieDosis" class="form-control" placeholder="Ej: LOT-2026-X4" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="fechaCaduca" class="form-label">Fecha de Vencimiento</label>
+                        <input type="date" th:field="*{fechaCaduca}" id="fechaCaduca" class="form-control" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <div class="card-header text-white">
-                    <h5 class="mb-0" th:text="${vacuna.idVacuna == 0 ? 'Registrar Nuevo Lote' : 'Modificar Lote Existente'}"></h5>
+                <div class="mb-5">
+                    <label for="cantidadDosis" class="form-label text-primary-label">Dosis disponibles en este envase</label>
+                    <input type="number" th:field="*{cantidadDosis}" id="cantidadDosis" class="form-control" placeholder="Seleccione la cantidad..." min="0" required>
+
+                    <input type="hidden" th:field="*{medida}" />
                 </div>
 
-                <div class="card-body p-4 p-md-5">
-                    <form th:action="@{/vacunas/guardar}" th:object="${vacuna}" method="post">
+                <button type="submit" class="btn-register shadow-sm">
+                    <i class="bi bi-box-arrow-in-down"></i>
+                    <span th:text="${vacuna.idVacuna != 0 ? 'Guardar Cambios del Lote' : 'Registrar Ingreso de Stock'}">Registrar Ingreso de Stock</span>
+                </button>
+            </form>
 
-                        <input type="hidden" th:field="*{idVacuna}">
-
-                        <div class="row g-4">
-                            <div class="col-md-7">
-                                <label class="form-label">Laboratorio Productor</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select th:field="*{laboratorio.idLaboratorio}" class="form-select" required>
-                                        <option value="">-- Seleccione Laboratorio --</option>
-                                        <option th:each="lab : ${laboratorios}" th:value="${lab.idLaboratorio}" th:text="${lab.nomComercial}"></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-5">
-                                <label class="form-label">Tipo de Antigeno</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
-                                    <select th:field="*{antigeno}" class="form-select" required>
-                                        <option value="">-- Seleccione --</option>
-                                        <option th:each="ant : ${antigenos}" th:value="${ant}" th:text="${ant}"></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Cantidad (Dosis)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-layers"></i></span>
-                                    <input type="number" th:field="*{cantidadDosis}" class="form-control" placeholder="Ej: 50" min="1" required>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Medida Unitaria</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-droplet"></i></span>
-                                    <select th:field="*{medida}" class="form-select" required>
-                                        <option value="">-- ML --</option>
-                                        <option th:each="m : ${medidas}" th:value="${m}" th:text="${m.valor + ' ML'}"></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Fecha Vencimiento</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-calendar-x"></i></span>
-                                    <input type="date" th:field="*{fechaCaduca}" class="form-control" required>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="p-3 border rounded-3 bg-light">
-                                    <label class="form-label fw-bold text-primary">Identificador de Serie Inicial</label>
-                                    <div class="input-group has-validation">
-                                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                                        <input type="text" th:field="*{nroSerieDosis}" id="nroSerieDosis"
-                                               class="form-control" th:classappend="${#fields.hasErrors('nroSerieDosis')} ? 'is-invalid' : ''"
-                                               placeholder="Ingrese numero o '0' para automatico" maxlength="20">
-
-                                        <div th:if="${#fields.hasErrors('nroSerieDosis')}" th:errors="*{nroSerieDosis}" class="invalid-feedback d-block"></div>
-                                    </div>
-                                    <div class="form-text small mt-2 text-secondary">
-                                        <i class="bi bi-info-circle-fill me-1"></i>
-                                        Al ingresar <strong>0</strong>, el sistema calculara la secuencia basandose en el registro previo.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-5 d-flex justify-content-between align-items-center">
-                            <a th:href="@{/vacunas/listado}" class="text-decoration-none text-muted fw-bold">
-                                <i class="bi bi-arrow-left me-1"></i> Regresar al Listado
-                            </a>
-                            <div class="d-flex gap-2">
-                                <button type="reset" class="btn btn-light px-4 border">Limpiar</button>
-                                <button type="submit" class="btn btn-primary px-5 shadow-sm">
-                                    <i class="bi bi-save me-2"></i> Guardar Registro
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <p class="text-center mt-4 text-muted small">© 2026 Sistema Vacunar-te - Ministerio de Salud Cordoba</p>
+            <a th:href="@{/vacunas/listado}" class="back-link">← Volver al Inventario</a>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const inputSerie = document.getElementById('nroSerieDosis');
-        inputSerie.addEventListener('input', function (e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    });
-</script>
 </body>
 </html>

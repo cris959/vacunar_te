@@ -38,10 +38,12 @@ public class Laboratorio {
     @Column(unique = true, nullable = false, length = 11)
     private String cuit;
 
+    @Column(name = "nom_comercial")
     private String nomComercial;
 
     private String pais;
 
+    @Column(name = "dom_comercial")
     private String domComercial;
 
     @OneToMany(mappedBy = "laboratorio", cascade = CascadeType.ALL)

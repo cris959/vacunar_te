@@ -58,16 +58,18 @@ public class VacunaService {
     // 2. Busca vacunas disponibles cuya fecha de caducidad ya paso y cambia su estado a VENCIDA
     @Transactional
     public int depurarVacunasVencidas() {
-        List<Vacuna> vencidas = vacunaRepository.findByEstadoAndFechaCaducaBefore(
-                EstadoVacuna.DISPONIBLE, LocalDate.now()
-        );
-
-        for (Vacuna v : vencidas) {
-            v.setEstado(EstadoVacuna.VENCIDA);
-        }
-
-        vacunaRepository.saveAll(vencidas);
-        return vencidas.size();
+//        List<Vacuna> vencidas = vacunaRepository.findByEstadoAndFechaCaducaBefore(
+//                EstadoVacuna.DISPONIBLE, LocalDate.now()
+//        );
+//
+//        for (Vacuna v : vencidas) {
+//            v.setEstado(EstadoVacuna.VENCIDA);
+//        }
+//
+//        vacunaRepository.saveAll(vencidas);
+//        return vencidas.size();
+        // Esto ejecuta una sola sentencia SQL, evitando errores de validacion de Hibernate
+        return vacunaRepository.actualizarEstadoVencidas();
     }
 
     // 3. Recupera una vacuna especifica por su identificador unico
@@ -145,7 +147,8 @@ public class VacunaService {
     // 9. Devuelve todas las vacunas que no han sido marcadas como eliminadas/desechadas
     @Transactional(readOnly = true)
     public List<Vacuna> listarActivas() {
-        return vacunaRepository.findByEstadoNot(EstadoVacuna.DESECHADA);
+
+        return vacunaRepository.findByEstado(EstadoVacuna.DISPONIBLE);
     }
 
     // 10. Comprueba si un numero de serie ya existe en el sistema para evitar duplicidad

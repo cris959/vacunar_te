@@ -85,7 +85,7 @@ public class CiudadanoService {
 
     // 6. Obtiene unicamente a los ciudadanos que se encuentran habilitados (activo = true)
     @Transactional(readOnly = true)
-    public List<Ciudadano> obtenerTodosActivos() {
+    public List<Ciudadano> listarCiudadanosActivos() {
         return ciudadanoRepository.findByActivoTrue();
     }
 
@@ -102,5 +102,24 @@ public class CiudadanoService {
                 .orElseThrow(() -> new RegistroVacunacionException("No se encontro el ciudadano."));
         ciudadano.setActivo(true);
         ciudadanoRepository.save(ciudadano);
+    }
+
+    // 9. Recupera un ciudadano especifico por DNI para su edicion
+    @Transactional(readOnly = true)
+    public Ciudadano buscarPorId(int dni) {
+        return ciudadanoRepository.findById(dni)
+                .orElseThrow(() -> new RegistroVacunacionException("Ciudadano con DNI " + dni + " no encontrado."));
+    }
+
+    // 10. Procesa la actualizacion de datos permitiendo que el DNI ya exista (Edicion)
+    @Transactional
+    public Ciudadano actualizarCiudadano(Ciudadano ciudadano) {
+        // Validaciones basicas de integridad (puedes reutilizar las de registro)
+        if (ciudadano.getNombreCompleto() == null || ciudadano.getNombreCompleto().strip().isEmpty()) {
+            throw new RegistroVacunacionException("El nombre es obligatorio.");
+        }
+
+        // Aqui no validamos 'existsById' porque justamente el DNI YA EXISTE
+        return ciudadanoRepository.save(ciudadano);
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/vacunas")
 public class VacunaController {
@@ -34,15 +36,22 @@ public class VacunaController {
 
     // 2. Procesa el guardado validando errores de formulario, duplicados de serie y excepciones de servicio
     @PostMapping("/guardar")
-    public String guardarVacuna(@Valid @ModelAttribute("vacuna") Vacuna vacuna, BindingResult result, Model model, RedirectAttributes flash) {
+    public String guardarVacuna(@Valid @ModelAttribute("vacuna") Vacuna vacuna,
+                                BindingResult result,
+                                Model model,
+                                RedirectAttributes flash) {
+
+        // 1. Validaciones de JSR-303 (Anotaciones en la Entidad como @Size, @Pattern)
         if (result.hasErrors()) {
             cargarListasEnModel(model);
             return "vacuna-form";
         }
 
-        if (vacuna.getIdVacuna() == 0 && !vacuna.getNroSerieDosis().equals("0")) {
+        // 2. Validacion de Duplicados (Solo para nuevas vacunas)
+        // Nota: Simplifique la logica del ID y el numero de serie
+        if (vacuna.getIdVacuna() == 0) {
             if (vacunaService.existeNumeroSerie(vacuna.getNroSerieDosis())) {
-                result.rejectValue("nroSerieDosis", "error.vacuna", "Este numero de serie ya existe en el sistema.");
+                result.rejectValue("nroSerieDosis", "error.vacuna", "Este número de serie ya existe en el sistema.");
                 cargarListasEnModel(model);
                 return "vacuna-form";
             }
@@ -50,14 +59,17 @@ public class VacunaController {
 
         try {
             vacunaService.guardar(vacuna);
+            // El exito requiere redirect para limpiar el formulario
             flash.addFlashAttribute("success", "Lote de vacunas guardado correctamente.");
+            return "redirect:/vacunas/listado";
+
         } catch (Exception e) {
-            flash.addFlashAttribute("error", "Error al guardar el lote: " + e.getMessage());
+            // ERROR CRITICO CORREGIDO:
+            // Si hay error y vuelves a la vista (return), usa model.addAttribute, NO flash.
+            model.addAttribute("error", "Error al guardar el lote: " + e.getMessage());
             cargarListasEnModel(model);
             return "vacuna-form";
         }
-
-        return "redirect:/vacunas/listado";
     }
 
     // 3. Metodo privado para centralizar la carga de Enums y laboratorios en el Model
@@ -70,7 +82,13 @@ public class VacunaController {
     // 4. Carga la vista de listado con todas las vacunas que poseen un estado activo
     @GetMapping("/listado")
     public String listarVacunas(Model model) {
-        model.addAttribute("vacunas", vacunaService.listarActivas());
+        // 1. Marcamos las vencidas en la DB (Tu log ya confirmó que esto funciona)
+        vacunaService.depurarVacunasVencidas();
+
+        // 2. Traemos SOLO las que quedaron como DISPONIBLE
+        List<Vacuna> disponibles = vacunaService.listarActivas();
+
+        model.addAttribute("vacunas", disponibles);
         return "vacuna-listado";
     }
 
@@ -121,5 +139,11 @@ public class VacunaController {
             flash.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/vacunas/listado";
+    }
+
+    // Si alguien intenta entrar por GET a la ruta de guardado, lo redirigimos al formulario
+    @GetMapping("/guardar")
+    public String redireccionarAlFormulario() {
+        return "redirect:/vacunas/nuevo";
     }
 }
