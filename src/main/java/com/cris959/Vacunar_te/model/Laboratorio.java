@@ -48,4 +48,7 @@ public class Laboratorio {
 
     @OneToMany(mappedBy = "laboratorio", cascade = CascadeType.ALL)
     private List<Vacuna> vacunas;
+
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true;
 }

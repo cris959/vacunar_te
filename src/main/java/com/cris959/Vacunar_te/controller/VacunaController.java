@@ -74,7 +74,7 @@ public class VacunaController {
 
     // 3. Metodo privado para centralizar la carga de Enums y laboratorios en el Model
     private void cargarListasEnModel(Model model) {
-        model.addAttribute("laboratorios", laboratorioService.listarTodos());
+        model.addAttribute("laboratorios", laboratorioService.listarTodosActivos());
         model.addAttribute("medidas", MedidaDosis.values());
         model.addAttribute("antigenos", TipoAntigeno.values());
     }
