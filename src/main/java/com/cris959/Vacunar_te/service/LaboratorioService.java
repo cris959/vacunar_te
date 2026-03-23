@@ -91,17 +91,24 @@ public class LaboratorioService {
         laboratorioRepository.save(lab);
     }
 
+    // 8. Recupera registros dados de baja para la papelera
     @Transactional(readOnly = true)
     public List<Laboratorio> listarInactivos() {
-
         return laboratorioRepository.findByActivoFalse();
     }
 
+    // 9. Reactiva laboratorios eliminados logicamente
     @Transactional
     public void restaurar(Long id) {
         Laboratorio lab = laboratorioRepository.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new RegistroVacunacionException("ID no encontrado"));
         lab.setActivo(true);
         laboratorioRepository.save(lab);
+    }
+
+    // 10. Filtra laboratorios mediante coincidencias numericas en el CUIT
+    @Transactional(readOnly = true)
+    public List<Laboratorio> buscarPorCuit(String cuit) {
+        return laboratorioRepository.findByCuitContaining(cuit);
     }
 }

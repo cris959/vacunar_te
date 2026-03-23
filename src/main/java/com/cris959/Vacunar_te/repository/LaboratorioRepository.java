@@ -11,17 +11,21 @@ import java.util.Optional;
 public interface LaboratorioRepository extends JpaRepository<Laboratorio, Integer> {
 
 
-    // Este es el que te falta para la validacion de edicion
+    // Busca un laboratorio por CUIT exacto, util para validaciones de edicion
     Optional<Laboratorio> findByCuit(String cuit);
 
-    // Para evitar duplicados nuevos
+    // Verifica si ya existe un laboratorio con ese CUIT para evitar duplicados
     boolean existsByCuit(String cuit);
 
-    // Buscar por nombre comercial para el buscador de la GUI
+    // Busca laboratorios por nombre comercial ignorando mayusculas y minusculas
     List<Laboratorio> findByNomComercialContainingIgnoreCase(String nombre);
 
+    // Retorna la lista de laboratorios que se encuentran en estado activo
     List<Laboratorio> findByActivoTrue();
+
+    // Retorna la lista de laboratorios dados de baja (papelera)
     List<Laboratorio> findByActivoFalse();
 
-
+    // Busca laboratorios que contengan una secuencia de numeros en su CUIT
+    List<Laboratorio> findByCuitContaining(String cuit);
 }

@@ -21,17 +21,17 @@ public class LavoratorioController {
 
     // 1. Muestra el listado de laboratorios activos con opcion de busqueda por nombre
     @GetMapping("/listado")
-    public String listarLaboratorios(@RequestParam(name = "buscarNombre", required = false) String nombre, Model model) {
-        List<Laboratorio> lista;
-        if (nombre != null && !nombre.isBlank()) {
-            // Si hay texto, busca por nombre
-            lista = laboratorioService.buscarPorNombre(nombre);
+    public String listarLaboratorios(@RequestParam(name = "cuit", required = false) String cuit, Model model) {
+        List<Laboratorio> laboratorios;
+
+        if (cuit != null && !cuit.isEmpty()) {
+            laboratorios = laboratorioService.buscarPorCuit(cuit);
+            model.addAttribute("cuitBusqueda", cuit); // Para mantener el texto en el input
         } else {
-            // SI NO HAY BUSQUEDA, TRAE TODOS LOS ACTIVOS
-            lista = laboratorioService.listarTodosActivos();
+            laboratorios = laboratorioService.listarTodosActivos();
         }
 
-        model.addAttribute("laboratorios", lista);
+        model.addAttribute("laboratorios", laboratorios);
         return "laboratorio-listado";
     }
 
