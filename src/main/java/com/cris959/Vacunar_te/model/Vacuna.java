@@ -62,7 +62,7 @@ public class Vacuna {
     @Column(name = "cantidad_dosis", nullable = false)
     private int cantidadDosis;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "laboratorio")
     private Laboratorio laboratorio;
 }

@@ -82,7 +82,7 @@ public class VacunaController {
     // 4. Carga la vista de listado con todas las vacunas que poseen un estado activo
     @GetMapping("/listado")
     public String listarVacunas(Model model) {
-        // 1. Marcamos las vencidas en la DB (Tu log ya confirmó que esto funciona)
+        // 1. Marcamos las vencidas en la DB (Tu log ya confirmo que esto funciona)
         vacunaService.depurarVacunasVencidas();
 
         // 2. Traemos SOLO las que quedaron como DISPONIBLE

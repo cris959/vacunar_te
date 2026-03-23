@@ -90,4 +90,18 @@ public class LaboratorioService {
         lab.setActivo(true);
         laboratorioRepository.save(lab);
     }
+
+    @Transactional(readOnly = true)
+    public List<Laboratorio> listarInactivos() {
+
+        return laboratorioRepository.findByActivoFalse();
+    }
+
+    @Transactional
+    public void restaurar(Long id) {
+        Laboratorio lab = laboratorioRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new RegistroVacunacionException("ID no encontrado"));
+        lab.setActivo(true);
+        laboratorioRepository.save(lab);
+    }
 }

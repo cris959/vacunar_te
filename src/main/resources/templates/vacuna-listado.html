@@ -14,7 +14,7 @@
         .badge-disponible { background-color: #198754; color: white; padding: 0.5em 0.8em; }
         .stock-critico { color: #dc3545; font-weight: bold; }
 
-        /* Referencia de Stock según Captura 411 */
+        /* Referencia de Stock */
         .referencia-container {
             background-color: #ffffff;
             border-left: 5px solid #6c757d;
@@ -67,19 +67,33 @@
                     <tbody>
                     <tr th:each="v : ${vacunas}">
                         <td class="ps-4 fw-bold" th:text="${v.idVacuna}"></td>
-                        <td th:text="${v.laboratorio.nomComercial}"></td>
+
                         <td>
-                            <span class="badge badge-antigeno" th:text="${v.antigeno}"></span>
+                            <span th:if="${v.laboratorio != null}" th:text="${v.laboratorio.nomComercial}"></span>
+                            <span th:if="${v.laboratorio == null}" class="text-muted small italic">No asignado</span>
                         </td>
+
+                        <td>
+                            <span class="badge badge-antigeno" th:text="${#strings.replace(v.antigeno, '_', ' ')}"></span>
+                        </td>
+
                         <td>
                             <span th:text="${v.cantidadDosis}" th:classappend="${v.cantidadDosis <= 10} ? 'stock-critico' : ''"></span>
                             <i th:if="${v.cantidadDosis <= 10}" class="bi bi-exclamation-triangle-fill text-danger ms-1"></i>
                         </td>
-                        <td th:text="${v.medida}"></td>
+
+                        <td>
+                            <span class="text-secondary fw-medium"
+                                  th:text="${v.medida != null ? #strings.replace(v.medida, '_', ' ') : '-'}">
+                            </span>
+                        </td>
+
                         <td th:text="${#temporals.format(v.fechaCaduca, 'dd/MM/yyyy')}"></td>
+
                         <td>
                             <span class="badge badge-disponible" th:text="${v.estado}"></span>
                         </td>
+
                         <td class="text-center">
                             <div class="btn-group">
                                 <a th:href="@{/vacunas/descontar/{id}(id=${v.idVacuna})}"

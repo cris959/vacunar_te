@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacunar-te | Laboratorios Inactivos</title>
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #FFF5F5; }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.1);
+            border: 1px solid #FFD1D1;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: #F8F9FA;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #DEE2E6;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .btn-volver {
+            color: #6c757d;
+            border-color: #ced4da;
+            background-color: white;
+        }
+
+        .btn-volver:hover {
+            background-color: #e2e6ea;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        .btn-restaurar {
+            color: #198754;
+            border-color: #198754;
+            background-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-restaurar:hover {
+            background-color: #198754;
+            color: white;
+        }
+
+        .info-callout {
+            background-color: white;
+            border-left: 5px solid #dc3545;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 15px 20px;
+        }
+
+        .empty-state-icon {
+            opacity: 0.2;
+            color: #6c757d;
+        }
+
+        .badge-pais {
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-danger d-flex align-items-center mb-0">
+            <i class="fa-solid fa-trash-can me-3 fa-lg"></i> Laboratorios Inactivos
+        </h2>
+        <a th:href="@{/laboratorios/listado}" class="btn btn-volver shadow-sm d-flex align-items-center">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver al Listado
+        </a>
+    </div>
+
+    <div class="table-container mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th class="ps-4" style="width: 25%">DNI / CUIT</th>
+                    <th style="width: 30%">Nombre Comercial</th>
+                    <th style="width: 25%">País</th>
+                    <th class="text-center" style="width: 20%">Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(laboratorios)}">
+                    <td colspan="4" class="text-center py-5">
+                        <i class="fa-solid fa-box-open fa-3x mb-3 d-block empty-state-icon"></i>
+                        <span class="text-muted lead fs-6">La papelera se encuentra vacía actualmente.</span>
+                    </td>
+                </tr>
+
+                <tr th:each="lab : ${laboratorios}">
+                    <td class="ps-4 text-muted" th:text="${lab.cuit}"></td>
+                    <td>
+                        <div class="fw-bold text-dark" th:text="${lab.nomComercial}"></div>
+                    </td>
+                    <td>
+                            <span class="badge rounded-pill px-3 py-2 border badge-pais"
+                                  th:text="${lab.pais}"
+                                  th:classappend="${lab.pais == 'Argentina' ? 'bg-primary-subtle text-primary-emphasis border-primary-subtle' :
+                                                   lab.pais == 'EE.UU.' || lab.pais == 'EEUU' ? 'bg-success-subtle text-success-emphasis border-success-subtle' :
+                                                   lab.pais == 'China' ? 'bg-warning-subtle text-warning-emphasis border-warning-subtle' :
+                                                   lab.pais == 'Reino Unido' ? 'bg-info-subtle text-info-emphasis border-info-subtle' :
+                                                   'bg-secondary-subtle text-secondary-emphasis border-secondary-subtle'}">
+                            </span>
+                    </td>
+                    <td class="text-center">
+                        <form th:action="@{/laboratorios/restaurar/{id}(id=${lab.idLaboratorio})}" method="post">
+                            <button type="submit" class="btn btn-restaurar btn-sm px-3 shadow-sm">
+                                <i class="fa-solid fa-arrow-rotate-left"></i> Restaurar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="info-callout d-flex align-items-start shadow-sm border">
+        <i class="fa-solid fa-circle-info text-danger me-3 mt-1 fa-lg"></i>
+        <p class="mb-0 text-muted" style="font-size: 0.95rem; line-height: 1.5;">
+            Los laboratorios en esta lista han sido desactivados. Al <strong>restaurarlos</strong>, volverán a figurar en el listado activo y podrán asociarse nuevamente a nuevos lotes de vacunas.
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

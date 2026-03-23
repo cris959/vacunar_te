@@ -22,4 +22,6 @@ public interface LaboratorioRepository extends JpaRepository<Laboratorio, Intege
 
     List<Laboratorio> findByActivoTrue();
     List<Laboratorio> findByActivoFalse();
+
+
 }

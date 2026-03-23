@@ -1,6 +1,5 @@
 package com.cris959.Vacunar_te.controller;
 
-import com.cris959.Vacunar_te.exception.RegistroVacunacionException;
 import com.cris959.Vacunar_te.model.Laboratorio;
 import com.cris959.Vacunar_te.service.LaboratorioService;
 import org.springframework.stereotype.Controller;
@@ -47,21 +46,6 @@ public class LavoratorioController {
     // 3. Procesa el guardado del laboratorio gestionando errores de CUIT duplicado
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute("laboratorio") Laboratorio lab, RedirectAttributes flash) {
-//        try {
-//            laboratorioService.registrarLaboratorio(lab);
-//            flash.addFlashAttribute("success", "Laboratorio guardado con exito.");
-//            return "redirect:/laboratorios/listado";
-//        } catch (RegistroVacunacionException e) {
-//            flash.addFlashAttribute("error", e.getMessage());
-//            // Si el ID es > 0, devolvemos al form de editar, sino al de nuevo
-//            if (lab.getIdLaboratorio() > 0) {
-//                return "redirect:/laboratorios/editar/" + lab.getIdLaboratorio();
-//            }
-//            return "redirect:/laboratorios/nuevo";
-//        }
-        // PRUEBA DE FUEGO: Si aca el print sale con el dato viejo, el error es el HTML
-        System.out.println("Nombre que llega del form: " + lab.getNomComercial());
-
         try {
             // El objeto 'lab' ya trae el ID y los cambios si el HTML esta bien
             laboratorioService.guardar(lab);
@@ -81,10 +65,30 @@ public class LavoratorioController {
     }
 
     // 5. Ejecuta el borrado logico (Soft Delete) del laboratorio
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") int id, RedirectAttributes flash) {
         laboratorioService.eliminarLogico(id);
         flash.addFlashAttribute("warning", "El laboratorio fue dado de baja correctamente.");
         return "redirect:/laboratorios/listado";
+    }
+
+    // 6. Mostrar papelera => false
+    @GetMapping("/papelera")
+    public String mostrarPapelera(Model model) {
+        List<Laboratorio> inactivos = laboratorioService.listarInactivos();
+        model.addAttribute("laboratorios", inactivos);
+        return "laboratorio-papelera";
+    }
+
+    // 7. Restaurar el laboratorio => true
+    @PostMapping("/restaurar/{id}")
+    public String restaurar(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            laboratorioService.restaurar(id);
+            flash.addFlashAttribute("success", "Laboratorio restaurado con éxito.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "No se pudo restaurar: " + e.getMessage());
+        }
+        return "redirect:/laboratorios/papelera";
     }
 }
