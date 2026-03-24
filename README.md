@@ -184,6 +184,14 @@ graph LR
  y operación administrativa en centros de salud."
 ````
 ___
+### Vistas Vacunas, Ciudadanos y Laboratorio
+
+![Listado de Vacunas](./docs/captura-vacunas.png)
+
+![Listado de Ciudadanos](./docs/captura-ciudadanos.png)
+
+![Listado de Laboratorios](./docs/captura-laboratorios.png)
+___
 ## 🛠️ Tecnologías y Recursos Utilizados
 
 | Dependencia / Herramienta | Documentación Oficial                                                                                         |
