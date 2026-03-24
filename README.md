@@ -153,6 +153,37 @@ erDiagram
 
 ___
 
+### 🔄 Ciclo de Gestión y Navegación Circular (UX)
+
+```mermaid
+graph LR
+    %% Definición de Nodos
+    L[<b>Laboratorios</b><br/>Gestión de Proveedores]
+    V[<b>Stock de Vacunas</b><br/>Control de Lotes]
+    C[<b>Ciudadanos</b><br/>Registro de Pacientes]
+    T[<b>Citas/Turnos</b><br/>Aplicación de Dosis]
+
+    %% Flujo Circular (Botones Verdes)
+    L -- "Ver Stock" --> V
+    V -- "Ver Ciudadanos" --> C
+    C -- "Gestionar Laboratorios" --> L
+
+    %% Flujos de Acción Internos
+    C -- "Asignar Turno" --> T
+    V -- "Nuevo Lote" --> V
+    L -- "Nuevo Lab" --> L
+
+    %% Estilos
+    style L fill:#f8f9fa,stroke:#198754,stroke-width:2px
+    style V fill:#f8f9fa,stroke:#198754,stroke-width:2px
+    style C fill:#f8f9fa,stroke:#198754,stroke-width:2px
+    style T fill:#e2f4f1,stroke:#0f5132,stroke-width:2px
+```
+````
+"El sistema implementa una arquitectura de navegación bidireccional entre Laboratorios, Stock de Vacunas y Ciudadanos, optimizando los tiempos de carga    
+ y operación administrativa en centros de salud."
+````
+___
 ## 🛠️ Tecnologías y Recursos Utilizados
 
 | Dependencia / Herramienta | Documentación Oficial                                                                                         |
