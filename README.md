@@ -192,6 +192,56 @@ ___
 
 ![Listado de Laboratorios](./docs/captura-laboratorios.png)
 ___
+
+```mermaid
+graph TD
+    A[Usuario Autenticado] --> B{Tiene ROL_ADMIN?}
+
+subgraph "Vistas Dinámicas (Thymeleaf + Security)"
+B -- SÍ --> C["Acceso Total"]
+B -- NO --> D["Acceso Restringido (Solo Lectura/Uso)"]
+
+C --> C1["Botón 'Nuevo Lote' Visible"]
+C --> C2["Botones 'Editar' y 'Eliminar' Visibles"]
+C --> C3["Acceso a Papelera de Bajas"]
+
+D --> D1["Botón 'Nuevo Lote' OCULTO"]
+D --> D2["Botones 'Editar' y 'Eliminar' OCULTOS"]
+D --> D3["Botón 'Descontar Dosis' DISPONIBLE"]
+end
+
+subgraph "Protección a Nivel Backend"
+E["VacunaController"]
+C1 & C2 --> E
+D3 --> E
+
+F["Métodos @GetMapping('/eliminar/**')"]
+F -.->|Bloqueado si no es ADMIN| G[403 Forbidden]
+end
+```
+#### Renderización Condicional: Se utiliza el dialecto sec:authorize="hasRole('ADMIN')" de Thymeleaf para ocultar elementos críticos de la interfaz a usuarios sin privilegios, como los botones de edición y borrado.
+
+#### Seguridad por Método: El sistema garantiza que, aunque un usuario intente acceder a una URL de gestión (como /vacunas/eliminar/1) manualmente, Spring Security bloquee la petición si no cuenta con las credenciales necesarias.
+
+#### Interfaz Adaptativa: Los usuarios estándar mantienen la capacidad de interactuar con el stock (botón Descontar) para agilizar la trazabilidad diaria sin comprometer la integridad estructural de los datos del laboratorio.
+___
+
+### Vistas con Thymeleaf + Security: usando 'admin'; Inicio; Vacunas; Ciudadanos y Laboratorio
+
+![Vista de Login](./docs/captura-inicio.png)
+
+![Listado de Vacunas](./docs/captura-vacunas-2.png)
+
+![Listado de Ciudadanos](./docs/captura-ciudadanos-2.png)
+
+![Listado de Laboratorios](./docs/captura-laboratorios-2.png)
+
+### Vistas con Thymeleaf + Security: usando 'user'; Vacunas y Ciudadanos
+
+![Listado de Vacunas](./docs/captura-vacunas-3.png)
+
+![Listado de Ciudadanos](./docs/captura-ciudadanos-3.png)
+___
 ## 🛠️ Tecnologías y Recursos Utilizados
 
 | Dependencia / Herramienta | Documentación Oficial                                                                                         |
@@ -207,7 +257,8 @@ ___
 | **Thymeleaf Java8Time**   | [Formateo de Fechas](https://github.com/thymeleaf/thymeleaf-extras-java8time)                                 |
 | **Spring DevTools**       | [Desarrollo Rápido](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools) |
 | **Maven**                 | [Gestión de Dependencias](https://maven.apache.org/)                                                          |
-
+| **Spring Security 6**     | [Control de acceso robusto y protección contra vulnerabilidades (CSRF, XSS)](https://spring.io/projects/spring-security) |
+| **Thymeleaf Extras**      | [Integración de lógica de seguridad en vistas (Roles ADMIN y USER)](https://www.thymeleaf.org/thymeleaf-extras-springsecurity/) |
 ___
 
 ## 🚀 Cómo Ejecutar el Proyecto

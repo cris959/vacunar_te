@@ -1,144 +1,150 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock de Vacunas - Vacun-arTe</title>
     <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .badge-antigeno { background-color: #0dcaf0; color: #000; font-weight: 500; }
-        .badge-disponible { background-color: #198754; color: white; padding: 0.5em 0.8em; }
-        .stock-critico { color: #dc3545; font-weight: bold; }
+        .table-card { border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; background: white; }
+        .table thead th { font-weight: 600; color: #495057; background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; }
 
-        /* Referencia de Stock */
-        .referencia-container {
-            background-color: #ffffff;
-            border-left: 5px solid #6c757d;
-            border-radius: 4px;
-            margin-top: 30px;
-        }
+        /* Badges de Antígeno */
+        .bg-antigeno-arn { background-color: #e2f4f1; color: #0f5132; }
+        .bg-antigeno-vector { background-color: #eef2ff; color: #4338ca; }
+        .bg-antigeno-virus { background-color: #fff9db; color: #856404; }
+
+        /* Badges de Estado */
+        .badge-estado { background-color: #198754; color: white; padding: 5px 10px; border-radius: 6px; font-weight: 500; }
+
+        /* Estilos de botones de acción */
+        .btn-action-outline { border-radius: 8px; padding: 5px 10px; border: 1px solid #dee2e6; background: white; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-action-outline:hover { background-color: #f1f3f5; }
+
+        /* Card de Referencia */
+        .reference-card { border-radius: 10px; border: none; background-color: #f8f9fa; border-left: 4px solid #adb5bd; }
         .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .dot-vencido { background-color: #dc3545; }
-        .dot-critico { background-color: #ffc107; }
-        .dot-normal { background-color: #198754; }
-
-        /* Botones de Navegación Circular */
-        .btn-gestionar { background-color: #198754; color: white; border: none; border-radius: 12px; font-weight: 500; transition: all 0.3s; text-decoration: none; display: inline-block; }
-        .btn-gestionar:hover { background-color: #157347; transform: translateY(-2px); color: white; box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3); }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
+<!--<div th:replace="~{fragments/navbar :: menu-superior}"></div>-->
+
+<div class="container py-5">
+
+    <div th:replace="~{fragments/navbar :: menu-superior}"></div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold"><i class="bi bi-box me-2"></i>Stock de Vacunas</h2>
-        <div>
-            <button class="btn btn-outline-warning me-2" style="color: #ffc107; border-color: #ffc107;">
-                <i class="bi bi-calendar-check me-1"></i> Depurar Vencidos
-            </button>
-            <a th:href="@{/vacunas/nuevo}" class="btn btn-primary">
+        <h2 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-box-seam text-dark me-2"></i> Stock de Vacunas
+        </h2>
+        <div class="d-flex gap-2">
+            <a th:href="@{/vacunas/depurar}" class="btn btn-outline-warning text-warning px-3" style="border-radius: 8px;">
+                <i class="bi bi-calendar-x me-1"></i> Depurar Vencidos
+            </a>
+            <a th:href="@{/vacunas/nuevo}" class="btn btn-primary px-3 shadow-sm" style="border-radius: 8px;">
                 <i class="bi bi-plus-circle me-1"></i> Nuevo Lote
             </a>
         </div>
     </div>
 
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+    <div th:if="${msgSuccess}" class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4" role="alert" style="border-radius: 10px;">
         <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${success}">Lote de vacunas guardado correctamente.</span>
+        <div th:text="${msgSuccess}"></div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div class="card main-card">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">ID</th>
-                        <th>Laboratorio</th>
-                        <th>Antigeno</th>
-                        <th>Stock</th>
-                        <th>Medida</th>
-                        <th>Vencimiento</th>
-                        <th>Estado</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="v : ${vacunas}">
-                        <td class="ps-4 fw-bold" th:text="${v.idVacuna}"></td>
-                        <td>
-                            <span th:if="${v.laboratorio != null}" th:text="${v.laboratorio.nomComercial}"></span>
-                            <span th:if="${v.laboratorio == null}" class="text-muted small italic">No asignado</span>
-                        </td>
-                        <td>
-                            <span class="badge badge-antigeno" th:text="${#strings.replace(v.antigeno, '_', ' ')}"></span>
-                        </td>
-                        <td>
-                            <span th:text="${v.cantidadDosis}" th:classappend="${v.cantidadDosis <= 10} ? 'stock-critico' : ''"></span>
-                            <i th:if="${v.cantidadDosis <= 10}" class="bi bi-exclamation-triangle-fill text-danger ms-1"></i>
-                        </td>
-                        <td>
-                            <span class="text-secondary fw-medium"
-                                  th:text="${v.medida != null ? #strings.replace(v.medida, '_', ' ') : '-'}">
+    <div class="card table-card mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Laboratorio</th>
+                    <th>Antígeno</th>
+                    <th>Stock</th>
+                    <th>Medida</th>
+                    <th>Vencimiento</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="v : ${vacunas}">
+                    <td class="ps-4 fw-bold" th:text="${v.idVacuna}"></td>
+                    <td th:text="${v.laboratorio?.nomComercial}" class="fw-medium text-dark"></td>
+                    <td>
+                            <span class="badge rounded-pill px-3 py-2 border-0"
+                                  th:text="${v.antigeno}"
+                                  th:classappend="${v.antigeno == 'ARN_MENSAJERO' ? 'bg-antigeno-arn' :
+                                                 (v.antigeno == 'VECTOR_VIRAL' ? 'bg-antigeno-vector' : 'bg-antigeno-virus')}">
                             </span>
-                        </td>
-                        <td th:text="${#temporals.format(v.fechaCaduca, 'dd/MM/yyyy')}"></td>
-                        <td>
-                            <span class="badge badge-disponible" th:text="${v.estado}"></span>
-                        </td>
-                        <td class="text-center">
-                            <div class="btn-group">
-                                <a th:href="@{/vacunas/descontar/{id}(id=${v.idVacuna})}"
-                                   class="btn btn-outline-secondary btn-sm" title="Descontar 1 unidad">
-                                    <i class="bi bi-dash-circle"></i>
-                                </a>
+                    </td>
+
+                    <td>
+                            <span th:text="${v.cantidadDosis}"
+                                  th:class="${v.cantidadDosis <= 10 ? 'text-danger fw-bold' : ''}"></span>
+                        <i th:if="${v.cantidadDosis <= 10}" class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Stock Crítico"></i>
+                    </td>
+
+                    <td>
+                        <span th:text="${v.medida}" class="text-muted"></span>
+                    </td>
+
+                    <td th:text="${#temporals.format(v.fechaCaduca, 'dd/MM/yyyy')}"></td>
+
+                    <td>
+                        <span class="badge badge-estado" th:text="${v.estado}"></span>
+                    </td>
+
+                    <td class="text-center ps-0 pe-4">
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <a th:href="@{/vacunas/descontar/{id}(id=${v.idVacuna})}"
+                               class="btn-action-outline text-success"
+                               title="Descontar 1 Dosis">
+                                <i class="bi bi-dash-circle"></i>
+                            </a>
+
+                            <div sec:authorize="hasRole('ADMIN')" class="d-flex gap-2">
                                 <a th:href="@{/vacunas/editar/{id}(id=${v.idVacuna})}"
-                                   class="btn btn-outline-primary btn-sm mx-1">
+                                   class="btn-action-outline text-primary" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <a th:href="@{/vacunas/eliminar/{id}(id=${v.idVacuna})}"
-                                   class="btn btn-outline-danger btn-sm"
-                                   onclick="return confirm('¿Está seguro de eliminar este lote?')">
+                                   class="btn-action-outline text-danger"
+                                   onclick="return confirm('¿Confirma la baja de este lote?')"
+                                   title="Eliminar">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="mt-4 p-3 referencia-container shadow-sm">
-        <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-info-circle me-2 text-dark"></i>
-            <span class="fw-bold text-dark">Referencia de Stock:</span>
+    <div class="card reference-card p-3 mb-5">
+        <div class="d-flex align-items-center gap-4 small text-muted">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-info-circle me-1"></i> Referencia de Stock:</h6>
+            <span><span class="dot bg-danger"></span> Lote Vencido</span>
+            <span><span class="dot" style="background-color: #856404;"></span> Stock Crítico (<= 10 dosis)</span>
+            <span><span class="dot bg-success"></span> Estado Normal</span>
         </div>
-        <div class="d-flex gap-4 small text-dark">
-            <span><span class="dot dot-vencido"></span> Lote Vencido</span>
-            <span><span class="dot dot-critico"></span> Stock Crítico (<= 10 dosis)</span>
-            <span><span class="dot dot-normal"></span> Estado Normal</span>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-center gap-3 my-5">
-        <a th:href="@{/ciudadanos/listado}" class="btn btn-gestionar shadow-lg px-4 py-3">
-            <i class="bi bi-people-fill me-2"></i> Ver Ciudadanos Registrados
-        </a>
-
-        <a th:href="@{/laboratorios/listado}" class="btn btn-gestionar shadow-lg px-4 py-3">
-            <i class="bi bi-building-fill-check me-2"></i> Gestionar Laboratorios
-        </a>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-</div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
