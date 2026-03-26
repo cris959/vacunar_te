@@ -19,7 +19,6 @@ import com.cris959.Vacunar_te.exception.CitaInvalidaException;
 import com.cris959.Vacunar_te.model.CitaVacunacion;
 import com.cris959.Vacunar_te.service.CitaVacunacionService;
 import com.cris959.Vacunar_te.service.CiudadanoService;
-import com.cris959.Vacunar_te.service.VacunaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

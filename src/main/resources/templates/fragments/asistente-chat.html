@@ -1,0 +1,183 @@
+<div th:fragment="burbuja-chat">
+
+    <div style="display: none">
+        <div class="msg msg-user">Uso fantasma para el IDE</div>
+    </div>
+
+    <th:block th:inline="css">
+        <style>
+            .chat-bubble {
+                position: fixed !important;
+                /* 1. Lo subimos a 90px para que flote SOBRE el footer, no dentro de l */
+                bottom: 52px !important;
+                /* 2. Alineacion lateral con el borde del container */
+                right: calc(50% - 645px) !important;
+                width: 50px;
+                height: 50px;
+                background-color: #0dcaf0;
+                color: #212529 !important;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                cursor: pointer;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                z-index: 3000 !important;
+                transition: all 0.2s ease;
+                border: 2px solid white;
+            }
+
+            .chat-window {
+                position: fixed !important;
+                /* 3. La ventana nace justo arriba de la nueva posicion del robot */
+                bottom: 150px !important;
+                right: calc(50% - 645px) !important;
+                width: 340px;
+                height: 420px;
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                display: none;
+                flex-direction: column;
+                z-index: 3000 !important;
+                overflow: hidden;
+                border: 1px solid #dee2e6;
+            }
+
+            /* Responsivo: Si la pantalla es chica (celulares/tablets), lo bajamos al borde */
+            @media (max-width: 1350px) {
+                .chat-bubble { bottom: 20px !important; right: 20px !important; }
+                .chat-window { bottom: 85px !important; right: 20px !important; }
+            }
+
+            /* noinspection CSSUnusedSymbol */
+            .msg-user {
+                background: #0dcaf0;
+                color: #212529;
+                align-self: flex-end;
+                margin-left: auto;
+            }
+
+            .chat-messages {
+                flex: 1; /* Permite que el contenedor use el espacio disponible */
+
+                /* ALTURA MAXIMA CORREGIDA: Restamos el header y el input */
+                max-height: calc(450px - 60px - 65px) !important;
+                /* (Alto ventana - Alto cabecera - Alto input) = Unos 325px */
+
+                /* COMPORTAMIENTO CRITICO: Scrollbar si el texto desborda */
+                overflow-y: auto !important;
+
+                padding: 15px;
+                background: #f8f9fa;
+                font-size: 0.9rem;
+                display: flex;
+                flex-direction: column;
+                gap: 10px; /* Separacion entre mensajes */
+                word-wrap: break-word; /* Evita que el texto largo rompa la caja */
+            }
+
+            /* Opcional: Estilo para que el scrollbar sea mas discreto */
+            .chat-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+            .chat-messages::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            .chat-messages::-webkit-scrollbar-thumb {
+                background: #adb5bd;
+                border-radius: 3px;
+            }
+        </style>
+    </th:block>
+
+    <div class="chat-bubble" onclick="toggleChat()" id="btn-chat" title="Abrir asistente de salud">
+        <i class="bi bi-robot"></i></div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <span class="fw-bold"><i class="bi bi-robot me-2"></i> Asistente Vacunar-te</span>
+            <button type="button" class="btn-close btn-close-white" onclick="toggleChat()" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="chat-messages" id="chat-box">
+            <div class="msg msg-bot">¡Hola! Soy tu asistente en Córdoba. ¿Qué día quieres vacunarte? (Lunes a
+                Viernes).
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <label for="user-input" class="visually-hidden">Mensaje para el asistente</label>
+            <input type="text" id="user-input" class="form-control form-control-sm"
+                   placeholder="Escribe tu consulta...">
+            <button type="button" class="btn btn-success btn-sm" onclick="enviarMensaje()" aria-label="Enviar">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function toggleChat() {
+            const chat = document.getElementById('chat-window');
+            const isOpen = (chat.style.display === 'flex');
+            chat.style.display = isOpen ? 'none' : 'flex';
+
+            if (!isOpen) {
+                document.getElementById('user-input').focus();
+            }
+        }
+
+        async function enviarMensaje() {
+            const input = document.getElementById('user-input');
+            const box = document.getElementById('chat-box');
+            const mensaje = input.value.trim();
+
+            if (!mensaje) return;
+
+            // 1. Mostrar mensaje del usuario
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('msg', 'msg-user'); // Mejor para el IDE
+            userDiv.textContent = mensaje;
+            box.appendChild(userDiv);
+
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // 2. Mostrar indicador de "Pensando..."
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('msg', 'msg-bot');
+            loadingDiv.textContent = '...';
+            box.appendChild(loadingDiv);
+
+            try {
+                // 3. Llamada al servidor
+                const response = await fetch('/api/chat/preguntar?mensaje=' + encodeURIComponent(mensaje));
+                const data = await response.json();
+
+                // Quitar el indicador de carga
+                box.removeChild(loadingDiv);
+
+                // 4. Mostrar respuesta de Mistral
+                const botDiv = document.createElement('div');
+                botDiv.classList.add('msg', 'msg-bot');
+                botDiv.textContent = data['respuesta'] || "No entendí la consulta.";
+                box.appendChild(botDiv);
+
+            } catch (error) {
+                if (loadingDiv.parentNode) box.removeChild(loadingDiv);
+                const errDiv = document.createElement('div');
+                errDiv.classList.add('msg', 'msg-bot', 'text-danger');
+                errDiv.textContent = "Error de conexión con Mistral.";
+                box.appendChild(errDiv);
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') enviarMensaje();
+        });
+        /*]]>*/
+    </script>
+</div>
