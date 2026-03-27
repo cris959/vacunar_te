@@ -231,13 +231,15 @@ ___
 Se ha implementado un asistente virtual basado en Mistral AI (v1.0.0-M5) especializado en la coordinacion de turnos de vacunacion. El agente actua como un filtro inteligente que valida la disponibilidad segun el calendario laboral de Argentina.
 
 ````mermaid
-graph TD
-    A[Consulta de Usuario] --> B{¿Es Dia de Semana?}
-B -- No (Sábado/Domingo) --> C[Informar Centro Cerrado]
-B -- Si --> D{¿Es Feriado?}
-D -- Si --> C
-D -- No --> E[Validar DNI y Sugerir Turno]
-E --> F[Redireccion a Formulario de Cita]
+flowchart TD
+    A[Consulta del usuario] --> B{Es día hábil?}
+B -- No --> C[Informar centro cerrado]
+B -- Sí --> D{Es feriado?}
+D -- Sí --> C
+D -- No --> E[Validar DNI]
+E --> F[Ver disponibilidad]
+F --> G[Mostrar turnos disponibles]
+G --> H[Derivar al formulario de cita]
 ````
 
 ___
@@ -303,12 +305,12 @@ SQLCREATE DATABASE vacunarte_db;
 Para mantener la seguridad, el proyecto utiliza variables de entorno. Puedes configurarlas en tu IDE (IntelliJ) o en tu
 sistema:
 
-| Variable    | Descripción         | Ejemplo      |
-|-------------|---------------------|--------------|
-| DB_NAME     | Nombre de la DB     | vacunarte_db |
-| DB_USER     | Usuario de MySQL    | tu_usuario   |
-| DB_PASSWORD | Contraseña de MySQL | tu_password  |
-| MISTRAL_API_KEY | Tu clave | moTHedQSs... |
+| Variable          | Descripción         | Ejemplo      |
+|-------------------|---------------------|--------------|
+| DB_NAME           | Nombre de la DB     | vacunarte_db |
+| DB_USER           | Usuario de MySQL    | tu_usuario   |
+| DB_PASSWORD       | Contraseña de MySQL | tu_password  |
+| MISTRAL_API_KEY   | Tu clave            | moTHedQSs... |
 
 ___
 
