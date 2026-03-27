@@ -1,19 +1,20 @@
 ![](https://api.visitorbadge.io/api/VisitorHit?user=cris959&repo=vacunar_te&countColor=%230e75b6)
 
-## Vacunar-te | Sistema de Gestión de Inmunización 🏥
+## Vacunar-te | Inmunización Inteligente Potenciada con Mistral AI 🏥✨
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-EN DESARROLLO-brightgreen?style=for-the-badge">
-  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> 
-  <img src="https://img.shields.io/badge/Thymeleaf-3.x-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white">
-</p>
+<div style="text-align: center;">
+  <img src="https://img.shields.io/badge/Status-EN%20DESARROLLO-brightgreen?style=for-the-badge" alt="Status EN DESARROLLO">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot 3.x">
+  <img src="https://img.shields.io/badge/Thymeleaf-3.x-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white" alt="Thymeleaf 3.x">
+  <img src="https://img.shields.io/badge/Mistral%20AI-AI-FF6000?style=for-the-badge&logo=mistralai&logoColor=white" alt="Mistral AI">
+</div>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/Version-v1.0-blue?style=for-the-badge">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge"></a>
-</p>
+<div style="text-align: center;">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL 8.0">
+  <img src="https://img.shields.io/badge/Version-v1.0-blue?style=for-the-badge" alt="Version v1.0">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License"></a>
+</div>
 
 ### Sistema integral desarrollado con Spring Boot 3 para la gestión de stock de vacunas, control de lotes y administración de laboratorios. Implementa una arquitectura robusta centrada en trazabilidad y eficiencia operativa.
 
@@ -226,6 +227,21 @@ end
 #### Interfaz Adaptativa: Los usuarios estándar mantienen la capacidad de interactuar con el stock (botón Descontar) para agilizar la trazabilidad diaria sin comprometer la integridad estructural de los datos del laboratorio.
 ___
 
+### Modulo de Inteligencia Artificial: Gestion de Turnos
+Se ha implementado un asistente virtual basado en Mistral AI (v1.0.0-M5) especializado en la coordinacion de turnos de vacunacion. El agente actua como un filtro inteligente que valida la disponibilidad segun el calendario laboral de Argentina.
+
+````mermaid
+graph TD
+    A[Consulta de Usuario] --> B{¿Es Dia de Semana?}
+B -- No (Sábado/Domingo) --> C[Informar Centro Cerrado]
+B -- Si --> D{¿Es Feriado?}
+D -- Si --> C
+D -- No --> E[Validar DNI y Sugerir Turno]
+E --> F[Redireccion a Formulario de Cita]
+````
+
+___
+
 ### Vistas con Thymeleaf + Security: usando 'admin'; Inicio; Vacunas; Ciudadanos y Laboratorio
 
 ![Vista de Login](./docs/captura-inicio.png)
@@ -242,23 +258,28 @@ ___
 
 ![Listado de Ciudadanos](./docs/captura-ciudadanos-3.png)
 ___
-## 🛠️ Tecnologías y Recursos Utilizados
 
-| Dependencia / Herramienta | Documentación Oficial                                                                                         |
-|:--------------------------|:--------------------------------------------------------------------------------------------------------------|
-| **Java 21 (LTS)**         | [JDK 21 Runtime](https://www.oracle.com/java/technologies/downloads/#java21)                                  |
-| **Spring Boot 3.5.x**     | [Framework Base](https://spring.io/projects/spring-boot)                                                      |
-| **Spring Data JPA**       | [Persistencia y ORM](https://spring.io/projects/spring-data-jpa)                                              |
-| **Spring Web (MVC)**      | [Gestión de Rutas y Controladores](https://docs.spring.io/spring-framework/reference/web/webmvc.html)         |
-| **Spring Validation**     | [Validación de Restricciones](https://docs.jboss.org/hibernate/validator/8.0/reference/en-US/html_single/)    |
-| **Thymeleaf**             | [Motor de Plantillas](https://www.thymeleaf.org/)                                                             |
-| **MySQL Connector/J**     | [Driver de Conexión](https://dev.mysql.com/doc/connector-j/en/)                                               |
-| **Lombok**                | [Optimización de Código](https://projectlombok.org/)                                                          |
-| **Thymeleaf Java8Time**   | [Formateo de Fechas](https://github.com/thymeleaf/thymeleaf-extras-java8time)                                 |
-| **Spring DevTools**       | [Desarrollo Rápido](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools) |
-| **Maven**                 | [Gestión de Dependencias](https://maven.apache.org/)                                                          |
-| **Spring Security 6**     | [Control de acceso robusto y protección contra vulnerabilidades (CSRF, XSS)](https://spring.io/projects/spring-security) |
-| **Thymeleaf Extras**      | [Integración de lógica de seguridad en vistas (Roles ADMIN y USER)](https://www.thymeleaf.org/thymeleaf-extras-springsecurity/) |
+### Vista implementación del ChatBot con Mistral: Ciudadanos
+
+![Listado de Ciudadanos](./docs/captura-ciudadanos-4.png)
+___
+## 🛠️ Tecnologías y Recursos Utilizados
+| Dependencia / Herramienta | Documentación Oficial                                                                                                                                                |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Java 21 (LTS)**         | [JDK 21 Runtime](https://www.oracle.com/java/technologies/downloads/#java21)                                                                                         |
+| **Spring Boot 3.5.x**     | [Framework Base](https://spring.io/projects/spring-boot)                                                                                                             |
+| **Spring Data JPA**       | [Persistencia y ORM](https://spring.io/projects/spring-data-jpa)                                                                                                     |
+| **Spring Web (MVC)**      | [Gestión de Rutas y Controladores](https://docs.spring.io/spring-framework/reference/web/webmvc.html)                                                                |
+| **Spring Validation**     | [Validación de Restricciones](https://docs.jboss.org/hibernate/validator/8.0/reference/en-US/html_single/)                                                           |
+| **Thymeleaf**             | [Motor de Plantillas](https://www.thymeleaf.org/)                                                                                                                    |
+| **MySQL Connector/J**     | [Driver de Conexión](https://dev.mysql.com/doc/connector-j/en/)                                                                                                      |
+| **Lombok**                | [Optimización de Código](https://projectlombok.org/)                                                                                                                 |
+| **Thymeleaf Java8Time**   | [Formateo de Fechas](https://github.com/thymeleaf/thymeleaf-extras-java8time)                                                                                        |
+| **Spring DevTools**       | [Desarrollo Rápido](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools)                                                        |
+| **Maven**                 | [Gestión de Dependencias](https://maven.apache.org/)                                                                                                                 |
+| **Spring Security 6**     | [Control de acceso robusto y protección contra vulnerabilidades (CSRF, XSS)](https://spring.io/projects/spring-security)                                             |
+| **Thymeleaf Extras**      | [Integración de lógica de seguridad en vistas (Roles ADMIN y USER)](https://www.thymeleaf.org/thymeleaf-extras-springsecurity/)                                      |
+| **Mistral AI**            | [Implementación de funcionalidades de IA generativa con Mistral en Spring Boot](https://docs.spring.io/spring-ai/reference/api/embeddings/mistralai-embeddings.html) |
 ___
 
 ## 🚀 Cómo Ejecutar el Proyecto
@@ -287,6 +308,7 @@ sistema:
 | DB_NAME     | Nombre de la DB     | vacunarte_db |
 | DB_USER     | Usuario de MySQL    | tu_usuario   |
 | DB_PASSWORD | Contraseña de MySQL | tu_password  |
+| MISTRAL_API_KEY | Tu clave | moTHedQSs... |
 
 ___
 
